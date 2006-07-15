@@ -148,10 +148,24 @@ class GraphClass:
 		GC3 = self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL]
 		GC3.foreground = gtk.gdk.color_parse("DarkGreen")
 		
+		# precompile the functions
+		try:
+			compiled_y1 = compile(y1,"",'eval')
+		except:
+			compiled_y1 = None
+		try:
+			compiled_y2 = compile(y2,"",'eval')
+		except:
+			compiled_y2 = None
+		try:
+			compiled_y3 = compile(y3,"",'eval')
+		except:
+			compiled_y3 = None
+		
 		self.PrevY = [None, None, None]
 		for i in xrange(self.CanvasWidth):
 			x = self.GraphX(i + 1)
-			for e in ((y1, 0, GC1), (y2, 1, GC2), (y3, 2, GC3)):
+			for e in ((compiled_y1, 0, GC1), (compiled_y2, 1, GC2), (compiled_y3, 2, GC3)):
 				try:
 					y = eval(e[0])
 					yC = self.CanvasY(y)
