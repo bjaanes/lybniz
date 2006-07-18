@@ -3,15 +3,13 @@
 
 """ 
 	Simple Function Graph Plotter
-	© Thomas Führinger, 2005-02-12
-	www.fuhringer.com/thomas
+	© Thomas Führinger, Sam Tygier 2005-2006
+	http://lybniz2.sourceforge.net/
 	
-	Code contributions by Sam Tygier - thanks!
-	
-	Version 1.0
+	Version 1.0.1
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
-	Modified: 2005-10-30
+	Modified: 2006-07-18
 """
 
 import gtk, math, sys
@@ -460,9 +458,9 @@ def ShowYelp(Widget):
 def ShowAboutDialog(Widget):
 	AboutDialog = gtk.AboutDialog()
 	AboutDialog.set_name("Lybniz")
-	AboutDialog.set_version("1.0")
+	AboutDialog.set_version("1.0.1")
 	#AboutDialog.set_copyright(u"© 2005 by Thomas Führinger")
-	AboutDialog.set_authors([u"Thomas Führinger"])
+	AboutDialog.set_authors([u"Thomas Führinger","Sam Tygier"])
 	AboutDialog.set_comments("Function Graph Plotter")
 	AboutDialog.set_license("Revised BSD")
 	#AboutDialog.set_website("http://www.fuhringer.com/thomas/lybniz")
