@@ -286,8 +286,7 @@ def MenuToolbarCreate():
 	Actions.ZoomReset.connect ("activate", ZoomReset)
 	Actions.add_action(Actions.ZoomReset)
 	MenuItemZoomReset = Actions.ZoomReset.create_menu_item()
-	MenuItemZoomReset.add_accelerator("activate", AppWin.AccelGroup, 
-ord("r"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	MenuItemZoomReset.add_accelerator("activate", AppWin.AccelGroup, ord("r"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
 	MenuGraph.append(MenuItemZoomReset)
 	
 	MenuItemToggleConnect = gtk.CheckMenuItem("_Connect Points")
