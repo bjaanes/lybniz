@@ -14,9 +14,10 @@
 
 import gtk, sys
 import math
+from math import *
 
 # profiling
-enable_profiling = True
+enable_profiling = False
 if enable_profiling:
 	from time import time
 
@@ -36,7 +37,18 @@ yScale = "1.0"
 y1 = ""
 y2 = ""
 y3 = ""
-	
+
+# create a safe namespace for the eval()s in the graph drawing code
+def sub_dict(somedict, somekeys, default=None):
+	return dict([ (k, somedict.get(k, default)) for k in somekeys ])
+# a list of the functions from math that we want.
+safe_list = ['math','acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees', 'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
+safe_dict = sub_dict(locals(), safe_list)
+
+#add any needed builtins back in.
+safe_dict['abs'] = abs
+
+
 class GraphClass:
 	def __init__(self):	
 
@@ -175,8 +187,9 @@ class GraphClass:
 			x = self.GraphX(i + 1)
 			for e in ((compiled_y1, 0, GC1), (compiled_y2, 1, GC2), (compiled_y3, 2, GC3)):
 			#for e in ((y1, 0, GC1), (y2, 1, GC2), (y3, 2, GC3)):
+				safe_dict['x']=x
 				try:
-					y = eval(e[0])
+					y = eval(e[0],{"__builtins__":{}},safe_dict)
 					yC = self.CanvasY(y)
 					
 					if yC < 0 or yC > self.CanvasHeight:
