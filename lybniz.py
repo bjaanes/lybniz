@@ -12,7 +12,13 @@
 	Modified: 2006-07-18
 """
 
-import gtk, math, sys
+import gtk, sys
+import math
+
+# profiling
+enable_profiling = True
+if enable_profiling:
+	from time import time
 
 AppWin = None
 Actions = gtk.ActionGroup("General")
@@ -161,9 +167,14 @@ class GraphClass:
 			compiled_y3 = None
 		
 		self.PrevY = [None, None, None]
+		
+		if enable_profiling:
+			start_graph = time()
+		
 		for i in xrange(self.CanvasWidth):
 			x = self.GraphX(i + 1)
 			for e in ((compiled_y1, 0, GC1), (compiled_y2, 1, GC2), (compiled_y3, 2, GC3)):
+			#for e in ((y1, 0, GC1), (y2, 1, GC2), (y3, 2, GC3)):
 				try:
 					y = eval(e[0])
 					yC = self.CanvasY(y)
@@ -179,6 +190,10 @@ class GraphClass:
 				except:
 					#print "Error at %d: %s" % (x, sys.exc_value)
 					self.PrevY[e[1]] = None
+					
+		if enable_profiling:
+			print "time to draw graph:", (time() - start_graph) * 1000, "ms"
+					
 		self.DrawDrawable()
 
 		
