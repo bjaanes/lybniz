@@ -337,13 +337,13 @@ def Plot(Widget, Event=None):
 	yMin = AppWin.yMinEntry.get_text()
 	yScale = AppWin.yScaleEntry.get_text()
 	
-	Graph.xMax = eval(xMax)
-	Graph.xMin = eval(xMin)
-	Graph.xScale = eval(xScale)
+	Graph.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
+	Graph.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
+	Graph.xScale = eval(xScale,{"__builtins__":{}},safe_dict)
 
-	Graph.yMax = eval(yMax)
-	Graph.yMin = eval(yMin)
-	Graph.yScale = eval(yScale)
+	Graph.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
+	Graph.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
+	Graph.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
 
 	y1 = AppWin.Y1Entry.get_text()
 	y2 = AppWin.Y2Entry.get_text()
