@@ -414,22 +414,32 @@ def Evaluate(Widget, Event=None):
 
 def ZoomIn(Widget, Event=None):
 	"Narrow the plotted section by half"
+	center_x = (Graph.xMin + Graph.xMax) / 2
+	center_y = (Graph.yMin + Graph.yMax) / 2
+	range_x = (Graph.xMax - Graph.xMin)
+	range_y = (Graph.yMax - Graph.yMin)
 	
-	Graph.xMin /= 2
-	Graph.yMin /= 2
-	Graph.xMax /= 2
-	Graph.yMax /= 2
+	Graph.xMin = center_x - (range_x / 4)
+	Graph.xMax = center_x + (range_x / 4)
+	Graph.yMin = center_y - (range_y / 4)
+	Graph.yMax = center_y +(range_y / 4)
+	
 	ParameterEntriesRepopulate()
 	Graph.Plot()
 
 
 def ZoomOut(Widget, Event=None):
 	"Double the plotted section"
+	center_x = (Graph.xMin + Graph.xMax) / 2
+	center_y = (Graph.yMin + Graph.yMax) / 2
+	range_x = (Graph.xMax - Graph.xMin)
+	range_y = (Graph.yMax - Graph.yMin)
 	
-	Graph.xMin *= 2
-	Graph.yMin *= 2
-	Graph.xMax *= 2
-	Graph.yMax *= 2
+	Graph.xMin = center_x - (range_x)
+	Graph.xMax = center_x + (range_x)
+	Graph.yMin = center_y - (range_y)
+	Graph.yMax = center_y +(range_y)	
+	
 	ParameterEntriesRepopulate()
 	Graph.Plot()
 

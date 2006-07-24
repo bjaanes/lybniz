@@ -1,0 +1,13 @@
+Current Version 1.1
+
+Changes since 1.0
+
+* Moved to sourceforge
+* Optimise drawing code (typically ~50% reduction in drawing time)
+	This was by compiling the function outside of the drawing loop
+	There are additional savings when only plotting 1 or 2 functions
+* Safer evaluation of expressions
+	The eval statement now runs with a restricted namespace. This prevents
+	a user being able to call other functions within the program.
+* Using "math." before a function name (eg math.sin(x)) is optional 
+* preserve center when zooming
