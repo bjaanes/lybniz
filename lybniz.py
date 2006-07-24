@@ -164,17 +164,21 @@ class GraphClass:
 		GC3 = self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL]
 		GC3.foreground = gtk.gdk.color_parse("DarkGreen")
 		
+		plots = []
 		# precompile the functions
 		try:
 			compiled_y1 = compile(y1,"",'eval')
+			plots.append((compiled_y1,0,GC1))
 		except:
 			compiled_y1 = None
 		try:
 			compiled_y2 = compile(y2,"",'eval')
+			plots.append((compiled_y2,1,GC2))
 		except:
 			compiled_y2 = None
 		try:
 			compiled_y3 = compile(y3,"",'eval')
+			plots.append((compiled_y3,2,GC3))
 		except:
 			compiled_y3 = None
 		
@@ -183,26 +187,26 @@ class GraphClass:
 		if enable_profiling:
 			start_graph = time()
 		
-		for i in xrange(self.CanvasWidth):
-			x = self.GraphX(i + 1)
-			for e in ((compiled_y1, 0, GC1), (compiled_y2, 1, GC2), (compiled_y3, 2, GC3)):
-			#for e in ((y1, 0, GC1), (y2, 1, GC2), (y3, 2, GC3)):
-				safe_dict['x']=x
-				try:
-					y = eval(e[0],{"__builtins__":{}},safe_dict)
-					yC = self.CanvasY(y)
-					
-					if yC < 0 or yC > self.CanvasHeight:
-						raise ValueError
-					
-					if ConnectPoints and self.PrevY[e[1]] is not None:
-						self.PixMap.draw_lines(e[2], [(i, self.PrevY[e[1]]), (i + 1, yC)])
-					else:
-						self.PixMap.draw_points(e[2], [(i + 1, yC)])
-					self.PrevY[e[1]] = yC
-				except:
-					#print "Error at %d: %s" % (x, sys.exc_value)
-					self.PrevY[e[1]] = None
+		if len(plots) != 0:
+			for i in xrange(self.CanvasWidth):
+				x = self.GraphX(i + 1)
+				for e in plots:
+					safe_dict['x']=x
+					try:
+						y = eval(e[0],{"__builtins__":{}},safe_dict)
+						yC = self.CanvasY(y)
+						
+						if yC < 0 or yC > self.CanvasHeight:
+							raise ValueError
+						
+						if ConnectPoints and self.PrevY[e[1]] is not None:
+							self.PixMap.draw_lines(e[2], [(i, self.PrevY[e[1]]), (i + 1, yC)])
+						else:
+							self.PixMap.draw_points(e[2], [(i + 1, yC)])
+						self.PrevY[e[1]] = yC
+					except:
+						#print "Error at %d: %s" % (x, sys.exc_value)
+						self.PrevY[e[1]] = None
 					
 		if enable_profiling:
 			print "time to draw graph:", (time() - start_graph) * 1000, "ms"
