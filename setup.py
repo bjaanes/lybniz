@@ -3,7 +3,7 @@
 
 from distutils.core import setup
 
-data_files = [('share/applications',['lybniz.desktop'])]
+data_files = [('share/applications',['lybniz.desktop']),('share/pixmaps',['images/lybniz.png'])]
 
 setup(
         name = 'lybniz',

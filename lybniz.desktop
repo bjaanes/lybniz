@@ -7,3 +7,4 @@ Terminal=false
 StartupNotify=true
 Type=Application
 Categories=Education;Utility;
+Icon=lybniz.png
