@@ -58,12 +58,12 @@ class GraphClass:
 			self.PixMap = gtk.gdk.Pixmap(Widget.window, w, h)
 			self.CanvasWidth = w
 			self.CanvasHeight = h
-			self.xMax = eval(xMax)
-			self.xMin = eval(xMin)
-			self.xScale = eval(xScale)
-			self.yMax = eval(yMax)
-			self.yMin = eval(yMin)
-			self.yScale = eval(yScale)
+			self.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
+			self.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
+			self.xScale = eval(xScale,{"__builtins__":{}},safe_dict)
+			self.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
+			self.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
+			self.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
 			self.Plot()
 			return True
 
@@ -363,7 +363,7 @@ def Evaluate(Widget, Event=None):
 		for e in ((y1, DlgWin.Y1Entry), (y2, DlgWin.Y2Entry), (y3, DlgWin.Y3Entry)):
 			try:
 				x = float(DlgWin.XEntry.get_text())
-				e[1].set_text(str(eval(e[0])))
+				e[1].set_text(str(eval(e[0],{"__builtins__":{}},safe_dict)))
 			except:
 				if len(e[0]) > 0:
 					e[1].set_text("Error: %s" % sys.exc_value)
@@ -451,10 +451,10 @@ def ZoomOut(Widget, Event=None):
 def ZoomReset(Widget, Event=None):
 	"Set the range back to the user's input"
    
-	Graph.xMin = eval(xMin)
-	Graph.yMin = eval(yMin)
-	Graph.xMax = eval(xMax)
-	Graph.yMax = eval(yMax)
+	Graph.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
+	Graph.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
+	Graph.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
+	Graph.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
 	ParameterEntriesPopulate()
 	Graph.Plot()
 
