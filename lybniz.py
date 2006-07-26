@@ -537,6 +537,16 @@ def ParameterEntriesCreate():
 	
 	ParameterEntriesPopulate()
 	
+	AppWin.Y1Entry.connect("key-press-event", key_press_plot)
+	AppWin.Y2Entry.connect("key-press-event", key_press_plot)
+	AppWin.Y3Entry.connect("key-press-event", key_press_plot)
+	AppWin.xMinEntry.connect("key-press-event", key_press_plot)
+	AppWin.yMinEntry.connect("key-press-event", key_press_plot)
+	AppWin.xMaxEntry.connect("key-press-event", key_press_plot)
+	AppWin.yMaxEntry.connect("key-press-event", key_press_plot)
+	AppWin.xScaleEntry.connect("key-press-event", key_press_plot)
+	AppWin.yScaleEntry.connect("key-press-event", key_press_plot)
+	
 	l = gtk.Label("y1 = ")
 	l.set_alignment(0, .5)
 	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
@@ -606,7 +616,13 @@ def ParameterEntriesRepopulate():
 	AppWin.yMaxEntry.set_text(str(Graph.yMax))
 	AppWin.yScaleEntry.set_text(str(Graph.yScale))
 	
-	
+def key_press_plot(widget, event):
+	if event.keyval == 65293:
+		Plot(None)
+		return True
+	else:
+		return False
+
 def Main():
 	global AppWin, Graph
 	

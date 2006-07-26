@@ -11,3 +11,5 @@ Changes since 1.0
 	a user being able to call other functions within the program.
 * Using "math." before a function name (eg math.sin(x)) is optional 
 * preserve center when zooming
+* setup.py install script
+* pressing enter in input boxes refreshes plot
