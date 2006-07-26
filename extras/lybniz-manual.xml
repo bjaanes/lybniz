@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?> <!-- -*- xml -*- -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+	<!ENTITY date "2005-10-11">
+	<!ENTITY app "<application>Lybniz</application>">
+]>
+<article id="index" lang="en">
+<articleinfo> 
+	<title>&app; User Manual</title>
+	
+	<authorgroup>
+		<author>
+			<firstname>Thomas</firstname>
+			<surname>Führinger</surname>
+		</author>
+	</authorgroup>
+
+	<copyright>
+	<year>2005</year>
+		<holder>Thomas Führinger</holder>
+	</copyright>
+	<revhistory>
+		<revision>
+			<date>&date;</date> 
+			<revdescription> 
+				<para role="author">Thomas Führinger</para>
+			</revdescription> 
+		</revision>
+	</revhistory>
+</articleinfo> 
+
+<indexterm zone="index"> 
+	<primary>Lybniz</primary> 
+</indexterm>
+
+<para><application>&app;</application> is a simple mathematical function graph plotter.</para>
+
+<sect1 id="lybniz-using"> 
+<title>Using &app;</title> 
+<para>Enter functions in Python syntax with <code>x</code> as the dependent variable. Press the <guibutton>Plot</guibutton> button to see the graph.
+</para>
+<para>
+Constants and functions of the <code>math</code> module are available. They have to be prefixed with '<code>math.</code>', however.</para>
+
+<para>Examples:</para>
+<screen><userinput>y1 = x**3 - 2 * x
+y2 = 2 * math.cos(x)
+
+y1 = math.e ** (x / -5) * math.sin(x)
+</userinput></screen>
+<para><guilabel>xMin</guilabel>, <guilabel>xMax</guilabel>, <guilabel>yMin</guilabel>, <guilabel>yMax</guilabel> define the boundaries of the range on the abszissa and ordinate to be displayed.</para>
+<para><guilabel>xScale</guilabel>, <guilabel>yScale</guilabel> give the intervals at which marks are displayed on the respective axis.<sbr />
+They can also be stated as expressions. Examples:</para>
+<screen><userinput>xMin = math.pi * -2
+xMax = math.pi * 2
+xScale = math.pi / 2
+</userinput></screen>
+
+<para>To zoom in, activate the <guibutton>Zoom In</guibutton> tool button. It divides the range boundaries by half. <guibutton>Zoom out</guibutton> does the opposite. To closer inspect a specific section, drag the mouse cursor over an area. After release of the button the area thus marked will be displayed.</para>
+<para>To save the graph in PNG format choose <menuchoice><guimenu>File</guimenu><guimenuitem>Save</guimenuitem></menuchoice>.</para>
+<para>Using <menuchoice><guimenu>Graph</guimenu><guimenuitem>Evaluate</guimenuitem></menuchoice> you get a dialog box that allows input of an <code>x</code> value and calculates <code>y</code> values.</para>
+</sect1>
+<sect1 id="lybniz-accelerator-keys"> 
+<title>Accelerator Keys</title> 
+<table frame='all'>
+	<tgroup cols='2' align='left' colsep='0' rowsep='0'>
+		<colspec/>
+		<colspec/>
+		<thead>
+			<row>
+				<entry>Accelerator</entry>
+				<entry>Function</entry>
+			</row>
+		</thead>
+		<tbody>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>L</keycap></keycombo></entry>
+				<entry>Plot graph</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>+</keycap></keycombo></entry>
+				<entry>Zoom in</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>-</keycap></keycombo></entry>
+				<entry>Zoom out</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo></entry>
+				<entry>Reset zoom</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>S</keycap></keycombo></entry>
+				<entry>Save graph</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>E</keycap></keycombo></entry>
+				<entry>Evaluate functions</entry>
+			</row>
+			<row>
+				<entry><keycombo><keycap>Ctrl</keycap><keycap>Q</keycap></keycombo></entry>
+				<entry>Quit <application>&app;</application></entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
+</sect1>
+
+<sect1 id="gemello-about"> 
+	<title>About &app;</title> 
+	<para><application>&app;</application> was written by Thomas Führinger
+      (<email>ThomasFuhringer@Yahoo.com</email>). To find more information about
+      <application>&app;</application>, please visit the 
+      <ulink url="http://www.fuhringer.com/thomas/lybniz" type="http">&app; Web
+	page</ulink>. </para>
+
+    <para>This program is distributed under the revised BSD license.</para>
+</sect1>
+</article>

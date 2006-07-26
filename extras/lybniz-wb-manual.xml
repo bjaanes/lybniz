@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?> <!-- -*- xml -*- -->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+	<!ENTITY date "2005-10-29">
+	<!ENTITY app "<application>Lybniz Workbench</application>">
+]>
+<article id="index" lang="en">
+<articleinfo> 
+	<title>&app; User Manual</title>
+	
+	<authorgroup>
+		<author>
+			<firstname>Thomas</firstname>
+			<surname>Führinger</surname>
+		</author>
+	</authorgroup>
+
+	<copyright>
+	<year>2005</year>
+		<holder>Thomas Führinger</holder>
+	</copyright>
+	<revhistory>
+		<revision>
+			<date>&date;</date> 
+			<revdescription> 
+				<para role="author">Thomas Führinger</para>
+			</revdescription> 
+		</revision>
+	</revhistory>
+</articleinfo> 
+
+<indexterm zone="index"> 
+	<primary>Lybniz</primary> 
+</indexterm>
+
+<para><application>&app;</application> is a simple mathematical function graph plotter.</para>
+
+<sect1 id="lybniz-using"> 
+<title>Using &app;</title> 
+<para>To open additional Workbench Windows right-click into an open one.
+</para>
+</sect1>
+
+<sect1 id="gemello-about"> 
+	<title>About &app;</title> 
+	<para><application>&app;</application> was written by Thomas Führinger
+      (<email>ThomasFuhringer@Yahoo.com</email>). To find more information about
+      <application>&app;</application>, please visit the 
+      <ulink url="http://www.fuhringer.com/thomas/lybniz" type="http">&app; Web
+	page</ulink>. </para>
+
+    <para>This program is distributed under the revised BSD license.</para>
+</sect1>
+</article>
