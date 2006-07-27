@@ -11,7 +11,7 @@
 	Released under the terms of the revised BSD license
 	Modified: 2006-07-18
 """
-
+from __future__ import division
 import gtk, sys
 import math
 from math import *

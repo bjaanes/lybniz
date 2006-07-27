@@ -10,6 +10,7 @@ Changes since 1.0
 	The eval statement now runs with a restricted namespace. This prevents
 	a user being able to call other functions within the program.
 * Using "math." before a function name (eg math.sin(x)) is optional 
-* preserve center when zooming
-* setup.py install script
-* pressing enter in input boxes refreshes plot
+* Preserve center when zooming
+* Setup.py install script
+* Pressing enter in input boxes refreshes plot
+* Make division always use floats (unless you use the // operator)
