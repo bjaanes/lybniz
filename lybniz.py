@@ -147,12 +147,12 @@ class GraphClass:
 		# draw scaling x
 		iv = int(self.xScale * self.CanvasWidth/(self.xMax - self.xMin))
 		os = self.CanvasX(0) % iv
-		for i in xrange(self.CanvasWidth / iv + 1):
+		for i in xrange(self.CanvasWidth // iv + 1):
 			self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [(os + i * iv, self.CanvasY(0) - 5), (os + i * iv, self.CanvasY(0) + 5)])
 		# draw scaling y
 		iv = int(self.yScale * self.CanvasHeight/(self.yMax - self.yMin))
 		os = self.CanvasY(0) % iv
-		for i in xrange(self.CanvasHeight / iv + 1):
+		for i in xrange(self.CanvasHeight // iv + 1):
 			self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [(self.CanvasX(0) - 5, i * iv + os), (self.CanvasX(0) + 5, i * iv + os)])
 
 		# plot
