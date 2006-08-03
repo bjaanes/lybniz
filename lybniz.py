@@ -6,7 +6,7 @@
 	© Thomas Führinger, Sam Tygier 2005-2006
 	http://lybniz2.sourceforge.net/
 	
-	Version 1.0.1
+	Version 1.1
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
 	Modified: 2006-07-18
@@ -499,7 +499,7 @@ def ShowYelp(Widget):
 def ShowAboutDialog(Widget):
 	AboutDialog = gtk.AboutDialog()
 	AboutDialog.set_name("Lybniz")
-	AboutDialog.set_version("1.0.1")
+	AboutDialog.set_version("1.1")
 	#AboutDialog.set_copyright(u"© 2005 by Thomas Führinger")
 	AboutDialog.set_authors([u"Thomas Führinger","Sam Tygier"])
 	AboutDialog.set_comments("Function Graph Plotter")
