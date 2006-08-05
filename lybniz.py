@@ -17,7 +17,7 @@ import math
 from math import *
 
 # profiling
-enable_profiling = False
+enable_profiling = True
 if enable_profiling:
 	from time import time
 
@@ -25,6 +25,8 @@ AppWin = None
 Actions = gtk.ActionGroup("General")
 Graph = None
 ConnectPoints = True
+
+x_res = 1
 
 xMax = "5.0"
 xMin = "-5.0"
@@ -188,7 +190,7 @@ class GraphClass:
 			start_graph = time()
 		
 		if len(plots) != 0:
-			for i in xrange(self.CanvasWidth):
+			for i in xrange(0,self.CanvasWidth,x_res):
 				x = self.GraphX(i + 1)
 				for e in plots:
 					safe_dict['x']=x
@@ -200,9 +202,9 @@ class GraphClass:
 							raise ValueError
 						
 						if ConnectPoints and self.PrevY[e[1]] is not None:
-							self.PixMap.draw_lines(e[2], [(i, self.PrevY[e[1]]), (i + 1, yC)])
+							self.PixMap.draw_lines(e[2], [(i, self.PrevY[e[1]]), (i + x_res, yC)])
 						else:
-							self.PixMap.draw_points(e[2], [(i + 1, yC)])
+							self.PixMap.draw_points(e[2], [(i + x_res, yC)])
 						self.PrevY[e[1]] = yC
 					except:
 						#print "Error at %d: %s" % (x, sys.exc_value)
