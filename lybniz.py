@@ -58,6 +58,13 @@ class GraphClass:
 		def ConfigureEvent(Widget, Event):
 			x, y, w, h = Widget.get_allocation()
 			self.PixMap = gtk.gdk.Pixmap(Widget.window, w, h)
+			
+			# make colors
+			self.gc = dict()
+			for name, color in (('black',(0,0,0)),('red',(32000,0,0)),('blue',(0,0,32000)),('green',(0,32000,0))):
+				self.gc[name] =self.PixMap.new_gc()
+				self.gc[name].set_rgb_fg_color(gtk.gdk.Color(red=color[0],green=color[1],blue=color[2]))
+			
 			self.CanvasWidth = w
 			self.CanvasHeight = h
 			self.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
@@ -134,53 +141,44 @@ class GraphClass:
 		self.DrawingArea.connect("button_release_event", ButtonReleaseEvent)
 		self.DrawingArea.connect("motion_notify_event", MotionNotifyEvent)
 		self.DrawingArea.set_events(gtk.gdk.EXPOSURE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK |gtk.gdk.POINTER_MOTION_HINT_MASK)
-			
+
 	def DrawDrawable(self):
 		x, y, w, h = self.DrawingArea.get_allocation()
 		self.DrawingArea.window.draw_drawable(self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL], self.PixMap, 0, 0, 0, 0, w, h)
 		
-	def Plot(self):	
+	def Plot(self):
 		self.PixMap.draw_rectangle(self.DrawingArea.get_style().white_gc, True, 0, 0, self.CanvasWidth, self.CanvasHeight)
 		
 		# draw cross
-		self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [self.CanvasPoint(0, self.yMin), self.CanvasPoint(0, self.yMax)])
-		self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [self.CanvasPoint(self.xMin, 0), self.CanvasPoint(self.xMax, 0)])
+		self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(0, self.yMin), self.CanvasPoint(0, self.yMax)])
+		self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(self.xMin, 0), self.CanvasPoint(self.xMax, 0)])
 		
 		# draw scaling x
 		iv = int(self.xScale * self.CanvasWidth/(self.xMax - self.xMin))
 		os = self.CanvasX(0) % iv
 		for i in xrange(self.CanvasWidth // iv + 1):
-			self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [(os + i * iv, self.CanvasY(0) - 5), (os + i * iv, self.CanvasY(0) + 5)])
+			self.PixMap.draw_lines(self.gc['black'], [(os + i * iv, self.CanvasY(0) - 5), (os + i * iv, self.CanvasY(0) + 5)])
 		# draw scaling y
 		iv = int(self.yScale * self.CanvasHeight/(self.yMax - self.yMin))
 		os = self.CanvasY(0) % iv
 		for i in xrange(self.CanvasHeight // iv + 1):
-			self.PixMap.draw_lines(self.DrawingArea.get_style().black_gc, [(self.CanvasX(0) - 5, i * iv + os), (self.CanvasX(0) + 5, i * iv + os)])
-
-		# plot
-		# (coloring of lines does not work yet)
-		GC1 = self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL]
-		GC1.foreground = gtk.gdk.color_parse("blue")
-		GC2 = self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL]
-		GC2.foreground = gtk.gdk.color_parse("red")
-		GC3 = self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL]
-		GC3.foreground = gtk.gdk.color_parse("DarkGreen")
+			self.PixMap.draw_lines(self.gc['black'], [(self.CanvasX(0) - 5, i * iv + os), (self.CanvasX(0) + 5, i * iv + os)])
 		
 		plots = []
 		# precompile the functions
 		try:
 			compiled_y1 = compile(y1,"",'eval')
-			plots.append((compiled_y1,0,GC1))
+			plots.append((compiled_y1,0,self.gc['blue']))
 		except:
 			compiled_y1 = None
 		try:
 			compiled_y2 = compile(y2,"",'eval')
-			plots.append((compiled_y2,1,GC2))
+			plots.append((compiled_y2,1,self.gc['red']))
 		except:
 			compiled_y2 = None
 		try:
 			compiled_y3 = compile(y3,"",'eval')
-			plots.append((compiled_y3,2,GC3))
+			plots.append((compiled_y3,2,self.gc['green']))
 		except:
 			compiled_y3 = None
 		
