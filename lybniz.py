@@ -150,19 +150,26 @@ class GraphClass:
 		self.PixMap.draw_rectangle(self.DrawingArea.get_style().white_gc, True, 0, 0, self.CanvasWidth, self.CanvasHeight)
 		
 		# draw cross
-		self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(0, self.yMin), self.CanvasPoint(0, self.yMax)])
-		self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(self.xMin, 0), self.CanvasPoint(self.xMax, 0)])
+		#self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(0, self.yMin), self.CanvasPoint(0, self.yMax)])
+		#self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(self.xMin, 0), self.CanvasPoint(self.xMax, 0)])
+		
+		# new functions with rounding
+		self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0))),0),(int(round(self.CanvasX(0))),self.CanvasHeight)])
+		self.PixMap.draw_lines(self.gc['black'], [(0,int(round(self.CanvasY(0)))),(self.CanvasWidth,int(round(self.CanvasY(0))))])
 		
 		# draw scaling x
-		iv = int(self.xScale * self.CanvasWidth/(self.xMax - self.xMin))
-		os = self.CanvasX(0) % iv
-		for i in xrange(self.CanvasWidth // iv + 1):
-			self.PixMap.draw_lines(self.gc['black'], [(os + i * iv, self.CanvasY(0) - 5), (os + i * iv, self.CanvasY(0) + 5)])
+		iv = self.xScale * self.CanvasWidth/(self.xMax - self.xMin) # pixel interval between marks
+		os = self.CanvasX(0) % iv # pixel offset of first mark 
+		# loop over each mark.
+		for i in xrange(int(self.CanvasWidth / iv + 1)):
+			#multiples of iv, cause adding of any error in iv, so keep iv as float
+			# use round(), to get to closest pixel, int() to prevent warning
+			self.PixMap.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.CanvasY(0) - 5))), (int(round(os + i * iv)), int(round(self.CanvasY(0) + 5)))])
 		# draw scaling y
-		iv = int(self.yScale * self.CanvasHeight/(self.yMax - self.yMin))
+		iv = self.yScale * self.CanvasHeight/(self.yMax - self.yMin)
 		os = self.CanvasY(0) % iv
-		for i in xrange(self.CanvasHeight // iv + 1):
-			self.PixMap.draw_lines(self.gc['black'], [(self.CanvasX(0) - 5, i * iv + os), (self.CanvasX(0) + 5, i * iv + os)])
+		for i in xrange(int(self.CanvasHeight / iv + 1)):
+			self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(i * iv + os))), (int(round(self.CanvasX(0) + 5)), int(round(i * iv + os)))])
 		
 		plots = []
 		# precompile the functions
@@ -194,7 +201,7 @@ class GraphClass:
 					safe_dict['x']=x
 					try:
 						y = eval(e[0],{"__builtins__":{}},safe_dict)
-						yC = self.CanvasY(y)
+						yC = int(round(self.CanvasY(y)))
 						
 						if yC < 0 or yC > self.CanvasHeight:
 							raise ValueError
@@ -216,10 +223,10 @@ class GraphClass:
 		
 	def CanvasX(self, x):
 		"Calculate position on canvas to point on graph"
-		return int((x - self.xMin) * self.CanvasWidth/(self.xMax - self.xMin))
+		return (x - self.xMin) * self.CanvasWidth/(self.xMax - self.xMin)
 
 	def CanvasY(self, y):
-		return int((self.yMax - y) * self.CanvasHeight/(self.yMax - self.yMin))
+		return (self.yMax - y) * self.CanvasHeight/(self.yMax - self.yMin)
 		
 	def CanvasPoint(self, x, y):
 		return (self.CanvasX(x), self.CanvasY(y))
