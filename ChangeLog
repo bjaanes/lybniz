@@ -3,6 +3,8 @@ Current Version 1.1
 Changes since 1.1
 
 * Coloured plotting
+* Auto Scaling
+* Scale labelling
 * Fix rounding error bugs in drawing code
 
 Changes since 1.0

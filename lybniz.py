@@ -12,7 +12,7 @@
 	Modified: 2006-07-18
 """
 from __future__ import division
-import gtk, sys
+import gtk, pango, sys
 import math
 from math import *
 
@@ -36,7 +36,7 @@ yMax = "3.0"
 yMin = "-3.0"
 yScale = "1.0"
 
-y1 = ""
+y1 = "sin(x)"
 y2 = ""
 y3 = ""
 
@@ -49,6 +49,36 @@ safe_dict = sub_dict(locals(), safe_list)
 
 #add any needed builtins back in.
 safe_dict['abs'] = abs
+
+def marks(min_val,max_val):
+	"yield positions of scale marks between min and max"
+	try:
+		min_val = float(min_val)
+		max_val = float(max_val)
+	except:
+		print "needs 2 numbers"
+		raise ValueError
+
+	if(min_val >= max_val):
+		print "min bigger or equal to max"
+		raise ValueError		
+
+	a=0.2 # tweakable control for when to switch scales
+	          # big a value results in more marks
+
+	width = max_val - min_val
+	log10_range = log10(width)
+
+	interval = 10 ** int(floor(log10_range - a))
+	lower_mark = min_val - fmod(min_val,interval)
+	
+	if lower_mark < min_val:
+		lower_mark += interval
+
+	a_mark = lower_mark
+	while a_mark <= max_val:
+		yield a_mark
+		a_mark += interval
 
 
 class GraphClass:
@@ -64,7 +94,7 @@ class GraphClass:
 			for name, color in (('black',(0,0,0)),('red',(32000,0,0)),('blue',(0,0,32000)),('green',(0,32000,0))):
 				self.gc[name] =self.PixMap.new_gc()
 				self.gc[name].set_rgb_fg_color(gtk.gdk.Color(red=color[0],green=color[1],blue=color[2]))
-			
+			self.layout = pango.Layout(Widget.create_pango_context())
 			self.CanvasWidth = w
 			self.CanvasHeight = h
 			self.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
@@ -73,6 +103,7 @@ class GraphClass:
 			self.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
 			self.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
 			self.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
+			self.ScaleStyle = "dec" # should be set from gui
 			self.Plot()
 			return True
 
@@ -157,20 +188,46 @@ class GraphClass:
 		self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0))),0),(int(round(self.CanvasX(0))),self.CanvasHeight)])
 		self.PixMap.draw_lines(self.gc['black'], [(0,int(round(self.CanvasY(0)))),(self.CanvasWidth,int(round(self.CanvasY(0))))])
 		
-		# draw scaling x
-		iv = self.xScale * self.CanvasWidth/(self.xMax - self.xMin) # pixel interval between marks
-		os = self.CanvasX(0) % iv # pixel offset of first mark 
-		# loop over each mark.
-		for i in xrange(int(self.CanvasWidth / iv + 1)):
-			#multiples of iv, cause adding of any error in iv, so keep iv as float
-			# use round(), to get to closest pixel, int() to prevent warning
-			self.PixMap.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.CanvasY(0) - 5))), (int(round(os + i * iv)), int(round(self.CanvasY(0) + 5)))])
-		# draw scaling y
-		iv = self.yScale * self.CanvasHeight/(self.yMax - self.yMin)
-		os = self.CanvasY(0) % iv
-		for i in xrange(int(self.CanvasHeight / iv + 1)):
-			self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(i * iv + os))), (int(round(self.CanvasX(0) + 5)), int(round(i * iv + os)))])
+		if (self.ScaleStyle == "cust"):
+			# old style axis marks
+			iv = self.xScale * self.CanvasWidth/(self.xMax - self.xMin) # pixel interval between marks
+			os = self.CanvasX(0) % iv # pixel offset of first mark 
+			# loop over each mark.
+			for i in xrange(int(self.CanvasWidth / iv + 1)):
+				#multiples of iv, cause adding of any error in iv, so keep iv as float
+				# use round(), to get to closest pixel, int() to prevent warning
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.CanvasY(0) - 5))), (int(round(os + i * iv)), int(round(self.CanvasY(0) + 5)))])
+			
+			# and the y-axis
+			iv = self.yScale * self.CanvasHeight/(self.yMax - self.yMin)
+			os = self.CanvasY(0) % iv
+			for i in xrange(int(self.CanvasHeight / iv + 1)):
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(i * iv + os))), (int(round(self.CanvasX(0) + 5)), int(round(i * iv + os)))])			
 		
+		else:
+			#new style
+			factor = 1
+			if (self.ScaleStyle == "rad"): factor = pi
+			for i in marks(self.xMin/factor,self.xMax/factor):
+				label = '%g' % i
+				if (self.ScaleStyle == "rad"): label += "pi"
+				i = i * factor
+
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 5))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 5)))])
+				self.layout.set_text(label)
+				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(i))),int(round(self.CanvasY(0) + 10)),self.layout)
+
+			for i in marks(self.yMin,self.yMax):
+				label = '%g' % i
+
+				#self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 5))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 5)))])
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(self.CanvasY(i)))), (int(round(self.CanvasX(0) + 5)), int(round(self.CanvasY(i))))])
+				
+				self.layout.set_text(label)
+				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(0) + 10)),int(round(self.CanvasY(i))),self.layout)
+
+
+
 		plots = []
 		# precompile the functions
 		try:
