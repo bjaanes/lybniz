@@ -50,8 +50,8 @@ safe_dict = sub_dict(locals(), safe_list)
 #add any needed builtins back in.
 safe_dict['abs'] = abs
 
-def marks(min_val,max_val):
-	"yield positions of scale marks between min and max"
+def marks(min_val,max_val,minor=1):
+	"yield positions of scale marks between min and max. For making minor marks, set minor to the number of minors you want between majors"
 	try:
 		min_val = float(min_val)
 		max_val = float(max_val)
@@ -65,6 +65,8 @@ def marks(min_val,max_val):
 
 	a=0.2 # tweakable control for when to switch scales
 	          # big a value results in more marks
+
+	a = a + log10(minor)
 
 	width = max_val - min_val
 	log10_range = log10(width)
@@ -228,6 +230,15 @@ class GraphClass:
 				self.layout.set_text(label)
 				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(0) + 10)),int(round(self.CanvasY(i))),self.layout)
 
+			# minor marks
+			for i in marks(self.xMin/factor,self.xMax/factor,minor=10):
+				i = i * factor
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 2))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 2)))])
+
+			for i in marks(self.yMin,self.yMax,minor=10):
+				label = '%g' % i
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 2)), int(round(self.CanvasY(i)))), (int(round(self.CanvasX(0) + 2)), int(round(self.CanvasY(i))))])
+				
 
 
 		plots = []
