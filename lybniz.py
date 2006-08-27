@@ -77,6 +77,8 @@ def marks(min_val,max_val):
 
 	a_mark = lower_mark
 	while a_mark <= max_val:
+		if abs(a_mark) < interval / 2:
+			a_mark = 0
 		yield a_mark
 		a_mark += interval
 
