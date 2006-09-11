@@ -183,16 +183,12 @@ class GraphClass:
 		
 	def Plot(self):
 		self.PixMap.draw_rectangle(self.DrawingArea.get_style().white_gc, True, 0, 0, self.CanvasWidth, self.CanvasHeight)
-		
-		# draw cross
-		#self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(0, self.yMin), self.CanvasPoint(0, self.yMax)])
-		#self.PixMap.draw_lines(self.gc['black'], [self.CanvasPoint(self.xMin, 0), self.CanvasPoint(self.xMax, 0)])
-		
-		# new functions with rounding
-		self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0))),0),(int(round(self.CanvasX(0))),self.CanvasHeight)])
-		self.PixMap.draw_lines(self.gc['black'], [(0,int(round(self.CanvasY(0)))),(self.CanvasWidth,int(round(self.CanvasY(0))))])
-		
+				
 		if (self.ScaleStyle == "cust"):
+			
+			#draw cross
+			self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0))),0),(int(round(self.CanvasX(0))),self.CanvasHeight)])
+			self.PixMap.draw_lines(self.gc['black'], [(0,int(round(self.CanvasY(0)))),(self.CanvasWidth,int(round(self.CanvasY(0))))])
 			# old style axis marks
 			iv = self.xScale * self.CanvasWidth/(self.xMax - self.xMin) # pixel interval between marks
 			os = self.CanvasX(0) % iv # pixel offset of first mark 
@@ -212,35 +208,58 @@ class GraphClass:
 			#new style
 			factor = 1
 			if (self.ScaleStyle == "rad"): factor = pi
+
+			# where to put the numbers
+			numbers_x_pos = -10
+			numbers_y_pos = 10
+			
+			# where to center the axis
+			center_x_pix = int(round(self.CanvasX(0)))
+			center_y_pix = int(round(self.CanvasY(0)))			
+			if (center_x_pix < 5): center_x_pix = 5
+			if (center_x_pix < 20):numbers_x_pos = 10
+			if (center_y_pix < 5): center_y_pix = 5
+			if (center_x_pix > self.CanvasWidth - 5): center_x_pix = self.CanvasWidth - 5
+			if (center_y_pix > self.CanvasHeight -5): center_y_pix = self.CanvasHeight - 5;
+			if (center_y_pix > self.CanvasHeight -20): numbers_y_pos = - 10
+			
+			# draw cross
+			self.PixMap.draw_lines(self.gc['black'], [(center_x_pix,0),(center_x_pix,self.CanvasHeight)])
+			self.PixMap.draw_lines(self.gc['black'], [(0,center_y_pix),(self.CanvasWidth,center_y_pix)])			
+				
 			for i in marks(self.xMin/factor,self.xMax/factor):
 				label = '%g' % i
 				if (self.ScaleStyle == "rad"): label += "pi"
 				i = i * factor
 
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 5))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 5)))])
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), center_y_pix - 5), (int(round(self.CanvasX(i))), center_y_pix + 5)])
+				
 				self.layout.set_text(label)
-				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(i))),int(round(self.CanvasY(0) + 10)),self.layout)
+				extents = self.layout.get_pixel_extents()[1]
+				if (numbers_y_pos < 0): adjust = extents[3]
+				else: adjust = 0
+				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(i))), center_y_pix + numbers_y_pos - adjust,self.layout)
 
 			for i in marks(self.yMin,self.yMax):
 				label = '%g' % i
 
-				#self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 5))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 5)))])
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(self.CanvasY(i)))), (int(round(self.CanvasX(0) + 5)), int(round(self.CanvasY(i))))])
+				self.PixMap.draw_lines(self.gc['black'], [(center_x_pix - 5, int(round(self.CanvasY(i)))), (center_x_pix + 5, int(round(self.CanvasY(i))))])
 				
 				self.layout.set_text(label)
-				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(0) + 10)),int(round(self.CanvasY(i))),self.layout)
+				extents = self.layout.get_pixel_extents()[1]
+				if (numbers_x_pos < 0): adjust = extents[2]
+				else: adjust = 0
+				self.PixMap.draw_layout(self.gc['black'],center_x_pix +numbers_x_pos - adjust,int(round(self.CanvasY(i))),self.layout)
 
 			# minor marks
 			for i in marks(self.xMin/factor,self.xMax/factor,minor=10):
 				i = i * factor
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), int(round(self.CanvasY(0) - 2))), (int(round(self.CanvasX(i))), int(round(self.CanvasY(0) + 2)))])
+				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), center_y_pix - 2), (int(round(self.CanvasX(i))), center_y_pix +2)])
 
 			for i in marks(self.yMin,self.yMax,minor=10):
 				label = '%g' % i
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 2)), int(round(self.CanvasY(i)))), (int(round(self.CanvasX(0) + 2)), int(round(self.CanvasY(i))))])
+				self.PixMap.draw_lines(self.gc['black'], [(center_x_pix - 2, int(round(self.CanvasY(i)))), (center_x_pix +2, int(round(self.CanvasY(i))))])
 				
-
-
 		plots = []
 		# precompile the functions
 		try:
