@@ -579,14 +579,17 @@ def ZoomReset(Widget, Event=None):
 
 def ScaleDec(Widget, Event=None):
 	Graph.ScaleStyle = "dec"
+	AppWin.ScaleBox.hide()
 	Plot(None)
 	
 def ScaleRad(Widget, Event=None):
 	Graph.ScaleStyle = "rad"
+	AppWin.ScaleBox.hide()
 	Plot(None)
 
 def ScaleCust(Widget, Event=None):
 	Graph.ScaleStyle = "cust"
+	AppWin.ScaleBox.show()
 	Plot(None)
 
 def ToggleConnect(Widget, Event=None):
@@ -677,6 +680,8 @@ def ParameterEntriesCreate():
 	AppWin.xScaleEntry.connect("key-press-event", key_press_plot)
 	AppWin.yScaleEntry.connect("key-press-event", key_press_plot)
 	
+	AppWin.ScaleBox = gtk.HBox()
+	
 	l = gtk.Label("y1 = ")
 	l.set_alignment(0, .5)
 	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
@@ -708,14 +713,21 @@ def ParameterEntriesCreate():
 	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("DarkGreen"))
 	Table.attach(l, 0, 1, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
 	Table.attach(AppWin.Y3Entry, 1, 2, 2, 3)
+	
+	
 	l = gtk.Label("xScale")
 	l.set_alignment(0, .5)
-	Table.attach(l, 2, 3, 2, 3, xpadding=5, ypadding=7, xoptions=gtk.FILL)
-	Table.attach(AppWin.xScaleEntry, 3, 4, 2, 3, xoptions=gtk.FILL)
+	AppWin.ScaleBox.add(l)
+	#Table.attach(l, 2, 3, 2, 3, xpadding=5, ypadding=7, xoptions=gtk.FILL)
+	#Table.attach(AppWin.xScaleEntry, 3, 4, 2, 3, xoptions=gtk.FILL)
+	AppWin.ScaleBox.add(AppWin.xScaleEntry)
 	l = gtk.Label("yScale")
 	l.set_alignment(0, .5)
-	Table.attach(l, 4, 5, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.yScaleEntry, 5, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
+	AppWin.ScaleBox.add(l)
+	#Table.attach(l, 4, 5, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	#Table.attach(AppWin.yScaleEntry, 5, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
+	AppWin.ScaleBox.add(AppWin.yScaleEntry)
+	Table.attach(AppWin.ScaleBox, 2, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
 	return Table
 	
 	
@@ -785,6 +797,7 @@ def Main():
 	AppWin.VBox.pack_start(AppWin.StatusBar, False, True, 0)	
 		
 	AppWin.show_all()
+	AppWin.ScaleBox.hide()
 
 	gtk.main()
 
