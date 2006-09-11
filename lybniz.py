@@ -393,7 +393,30 @@ def MenuToolbarCreate():
 	MenuItemToggleConnect.set_active(True)
 	MenuItemToggleConnect.connect ("toggled", ToggleConnect)
 	MenuGraph.append(MenuItemToggleConnect)
-		
+	
+	MenuScaleStyle = gtk.Menu()
+	MenuItemScaleStyle = gtk.MenuItem("Scale Style")
+	MenuItemScaleStyle.set_submenu(MenuScaleStyle)
+	MenuGraph.append(MenuItemScaleStyle)
+	
+	Actions.Dec = gtk.Action("Dec", "Decimal", "Decimal",None)
+	Actions.Dec.connect ("activate", ScaleDec)
+	Actions.add_action(Actions.Dec)
+	MenuItemDec = Actions.Dec.create_menu_item()
+	MenuScaleStyle.append(MenuItemDec)
+	
+	Actions.Rad = gtk.Action("Rad", "Radians", "Radians",None)
+	Actions.Rad.connect ("activate", ScaleRad)
+	Actions.add_action(Actions.Rad)
+	MenuItemRad = Actions.Rad.create_menu_item()
+	MenuScaleStyle.append(MenuItemRad)	
+	
+	Actions.Cust = gtk.Action("Cust", "Custom", "Custom",None)
+	Actions.Cust.connect ("activate", ScaleCust)
+	Actions.add_action(Actions.Cust)
+	MenuItemCust = Actions.Cust.create_menu_item()
+	MenuScaleStyle.append(MenuItemCust)
+	
 	MenuHelp = gtk.Menu()
 	MenuItemHelp = gtk.MenuItem("_Help")
 	MenuItemHelp.set_submenu(MenuHelp)
@@ -554,6 +577,17 @@ def ZoomReset(Widget, Event=None):
 	ParameterEntriesPopulate()
 	Graph.Plot()
 
+def ScaleDec(Widget, Event=None):
+	Graph.ScaleStyle = "dec"
+	Plot(None)
+	
+def ScaleRad(Widget, Event=None):
+	Graph.ScaleStyle = "rad"
+	Plot(None)
+
+def ScaleCust(Widget, Event=None):
+	Graph.ScaleStyle = "cust"
+	Plot(None)
 
 def ToggleConnect(Widget, Event=None):
 	"Toggle between a graph that connects points with lines and one that does not"
