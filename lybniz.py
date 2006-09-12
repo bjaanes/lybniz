@@ -6,10 +6,10 @@
 	© Thomas Führinger, Sam Tygier 2005-2006
 	http://lybniz2.sourceforge.net/
 	
-	Version 1.1
+	Version 1.2
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
-	Modified: 2006-07-18
+	Modified: 2006-09-12
 """
 from __future__ import division
 import gtk, pango, sys
@@ -17,7 +17,7 @@ import math
 from math import *
 
 # profiling
-enable_profiling = True
+enable_profiling = False
 if enable_profiling:
 	from time import time
 
@@ -633,7 +633,7 @@ def ShowYelp(Widget):
 def ShowAboutDialog(Widget):
 	AboutDialog = gtk.AboutDialog()
 	AboutDialog.set_name("Lybniz")
-	AboutDialog.set_version("1.1")
+	AboutDialog.set_version("1.2")
 	#AboutDialog.set_copyright(u"© 2005 by Thomas Führinger")
 	AboutDialog.set_authors([u"Thomas Führinger","Sam Tygier"])
 	AboutDialog.set_comments("Function Graph Plotter")
