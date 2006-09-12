@@ -107,7 +107,6 @@ class GraphClass:
 			self.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
 			self.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
 			self.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
-			self.ScaleStyle = "dec" # should be set from gui
 			self.Plot()
 			return True
 
@@ -176,7 +175,8 @@ class GraphClass:
 		self.DrawingArea.connect("button_release_event", ButtonReleaseEvent)
 		self.DrawingArea.connect("motion_notify_event", MotionNotifyEvent)
 		self.DrawingArea.set_events(gtk.gdk.EXPOSURE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK |gtk.gdk.POINTER_MOTION_HINT_MASK)
-
+		self.ScaleStyle = "dec"
+		
 	def DrawDrawable(self):
 		x, y, w, h = self.DrawingArea.get_allocation()
 		self.DrawingArea.window.draw_drawable(self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL], self.PixMap, 0, 0, 0, 0, w, h)
