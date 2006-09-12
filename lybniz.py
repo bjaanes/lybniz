@@ -229,7 +229,7 @@ class GraphClass:
 				
 			for i in marks(self.xMin/factor,self.xMax/factor):
 				label = '%g' % i
-				if (self.ScaleStyle == "rad"): label += "pi"
+				if (self.ScaleStyle == "rad"): label += '\xCF\x80'
 				i = i * factor
 
 				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), center_y_pix - 5), (int(round(self.CanvasX(i))), center_y_pix + 5)])
