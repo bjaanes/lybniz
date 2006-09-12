@@ -482,6 +482,7 @@ def Evaluate(Widget, Event=None):
 		for e in ((y1, DlgWin.Y1Entry), (y2, DlgWin.Y2Entry), (y3, DlgWin.Y3Entry)):
 			try:
 				x = float(DlgWin.XEntry.get_text())
+				safe_dict['x']=x
 				e[1].set_text(str(eval(e[0],{"__builtins__":{}},safe_dict)))
 			except:
 				if len(e[0]) > 0:
