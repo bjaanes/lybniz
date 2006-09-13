@@ -16,6 +16,14 @@ import gtk, pango, sys
 import math
 from math import *
 
+try:
+	import gnome
+	props = { gnome.PARAM_APP_DATADIR : '/usr/share'}
+	prog = gnome.program_init("lybniz", '1.2', properties=props)
+except:
+	print "Gnome not found"
+
+
 # profiling
 enable_profiling = False
 if enable_profiling:
@@ -628,9 +636,12 @@ def QuitDlg(Widget, Event=None):
 	
 
 def ShowYelp(Widget):
-	import os
-	os.system("yelp lybniz-manual.xml")
-		
+	#import os
+	#os.system("yelp /usr/share/gnome/help/lybniz/C/lybniz-manual.xml")
+	try:
+		gnome.help_display("lybniz")
+	except:
+		print "Can't Show help"
 
 def ShowAboutDialog(Widget):
 	AboutDialog = gtk.AboutDialog()
