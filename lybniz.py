@@ -40,6 +40,8 @@ y1 = "sin(x)"
 y2 = ""
 y3 = ""
 
+icon_file = "/usr/share/pixmaps/lybniz.png"
+
 # create a safe namespace for the eval()s in the graph drawing code
 def sub_dict(somedict, somekeys, default=None):
 	return dict([ (k, somedict.get(k, default)) for k in somekeys ])
@@ -639,6 +641,9 @@ def ShowAboutDialog(Widget):
 	AboutDialog.set_comments("Function Graph Plotter")
 	AboutDialog.set_license("Revised BSD")
 	#AboutDialog.set_website("http://www.fuhringer.com/thomas/lybniz")
+	
+	lybniz_icon = gtk.gdk.pixbuf_new_from_file(icon_file)
+	AboutDialog.set_logo(lybniz_icon)
 	AboutDialog.show()
 
 
@@ -773,7 +778,9 @@ def Main():
 	AppWin.set_title("Lybniz")
 	AppWin.set_default_size(800, 600)
 	AppWin.connect("delete-event", QuitDlg)
-
+	
+	AppWin.set_icon_from_file(icon_file)
+	
 	AppWin.AccelGroup = gtk.AccelGroup()
 	AppWin.add_accel_group(AppWin.AccelGroup)
 
