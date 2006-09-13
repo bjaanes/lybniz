@@ -615,13 +615,13 @@ def Save(Widget, Event=None):
 	FileDialog.set_filename("FunctionGraph.png")
 	
 	Response = FileDialog.run()
-	FileDialog.destroy()
 	if Response == gtk.RESPONSE_OK:
 		x, y, w, h = Graph.DrawingArea.get_allocation()
 		PixBuffer = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, w, h)
 		PixBuffer.get_from_drawable(Graph.PixMap, Graph.PixMap.get_colormap(), 0, 0, 0, 0, w, h)
 		PixBuffer.save(FileDialog.get_filename(), "png")
-	
+	FileDialog.destroy()
+
 
 def QuitDlg(Widget, Event=None):
 	gtk.main_quit()
