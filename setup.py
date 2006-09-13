@@ -3,19 +3,19 @@
 
 from distutils.core import setup
 
-data_files = [('share/applications',['lybniz.desktop']),('share/pixmaps',['images/lybniz.png'])]
+data_files = [('share/applications',['lybniz.desktop']),('share/pixmaps',['images/lybniz.png']),('share/gnome/help/lybniz/C',['doc/lybniz-manual.xml']),('share/gnome/help/lybniz/C/figures',['doc/figures/lybniz_colour_graph_small.png'])]
 
 setup(
-        name = 'lybniz',
-        version = '1.2',
-        description = 'Graph Plotter',
-        author = 'Thomas Führinger, Sam Tygier',
-        author_email = 'ThomasFuhringer@Yahoo.com, samtygier@yahoo.co.uk',
+	name = 'lybniz',
+	version = '1.2',
+	description = 'Graph Plotter',
+	author = 'Thomas Führinger, Sam Tygier',
+	author_email = 'ThomasFuhringer@Yahoo.com, samtygier@yahoo.co.uk',
 	contact = 'Sam Tygier',
 	contact_email = 'samtygier@yahoo.co.uk',
-        url = 'http://lybniz2.sourceforge.net/',
-        scripts = ['lybniz.py'],
-        data_files = data_files,
-       license = 'BSD',
-        )
+	url = 'http://lybniz2.sourceforge.net/',
+	scripts = ['lybniz.py'],
+	data_files = data_files,
+	license = 'BSD',
+	)
 
