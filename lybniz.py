@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """ 
-	Simple Function Graph Plotter
+	Simple Function graph Plotter
 	© Thomas Führinger, Sam Tygier 2005-2006
 	http://lybniz2.sourceforge.net/
 	
@@ -29,20 +29,20 @@ enable_profiling = False
 if enable_profiling:
 	from time import time
 
-AppWin = None
-Actions = gtk.ActionGroup("General")
-Graph = None
-ConnectPoints = True
+app_win = None
+actions = gtk.ActionGroup("General")
+graph = None
+connect_points = True
 
 x_res = 1
 
-xMax = "5.0"
-xMin = "-5.0"
-xScale = "1.0"
+x_max = "5.0"
+x_min = "-5.0"
+x_scale = "1.0"
 
-yMax = "3.0"
-yMin = "-3.0"
-yScale = "1.0"
+y_max = "3.0"
+y_min = "-3.0"
+y_scale = "1.0"
 
 y1 = "sin(x)"
 y2 = ""
@@ -99,176 +99,176 @@ class GraphClass:
 	def __init__(self):	
 
 		# Create backing pixmap of the appropriate size
-		def ConfigureEvent(Widget, Event):
-			x, y, w, h = Widget.get_allocation()
-			self.PixMap = gtk.gdk.Pixmap(Widget.window, w, h)
+		def configure_event(widget, event):
+			x, y, w, h = widget.get_allocation()
+			self.pix_map = gtk.gdk.Pixmap(widget.window, w, h)
 			
 			# make colors
 			self.gc = dict()
 			for name, color in (('black',(0,0,0)),('red',(32000,0,0)),('blue',(0,0,32000)),('green',(0,32000,0))):
-				self.gc[name] =self.PixMap.new_gc()
+				self.gc[name] =self.pix_map.new_gc()
 				self.gc[name].set_rgb_fg_color(gtk.gdk.Color(red=color[0],green=color[1],blue=color[2]))
-			self.layout = pango.Layout(Widget.create_pango_context())
-			self.CanvasWidth = w
-			self.CanvasHeight = h
-			self.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
-			self.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
-			self.xScale = eval(xScale,{"__builtins__":{}},safe_dict)
-			self.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
-			self.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
-			self.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
-			self.Plot()
+			self.layout = pango.Layout(widget.create_pango_context())
+			self.canvas_width = w
+			self.canvas_height = h
+			self.x_max = eval(x_max,{"__builtins__":{}},safe_dict)
+			self.x_min = eval(x_min,{"__builtins__":{}},safe_dict)
+			self.x_scale = eval(x_scale,{"__builtins__":{}},safe_dict)
+			self.y_max = eval(y_max,{"__builtins__":{}},safe_dict)
+			self.y_min = eval(y_min,{"__builtins__":{}},safe_dict)
+			self.y_scale = eval(y_scale,{"__builtins__":{}},safe_dict)
+			self.plot()
 			return True
 
 		# Redraw the screen from the backing pixmap
-		def ExposeEvent(Widget, Event):
-			x, y, w, h = Event.area
-			Widget.window.draw_drawable(Widget.get_style().fg_gc[gtk.STATE_NORMAL], self.PixMap, x, y, x, y, w, h)
+		def expose_event(widget, event):
+			x, y, w, h = event.area
+			widget.window.draw_drawable(widget.get_style().fg_gc[gtk.STATE_NORMAL], self.pix_map, x, y, x, y, w, h)
 			return False
 
 		# Start marking selection
-		def ButtonPressEvent(Widget, Event):
-			global xSel, ySel
+		def button_press_event(widget, event):
+			global x_sel, y_sel
 			
-			if Event.button == 1:
-				self.Selection[0][0], self.Selection[0][1] = int(Event.x), int(Event.y)
-				self.Selection[1][0], self.Selection[1][1] = None, None
+			if event.button == 1:
+				self.selection[0][0], self.selection[0][1] = int(event.x), int(event.y)
+				self.selection[1][0], self.selection[1][1] = None, None
 
 		# End of selection
-		def ButtonReleaseEvent(Widget, Event):
+		def button_release_event(widget, event):
 			
-			if Event.button == 1 and Event.x != self.Selection[0][0] and Event.y != self.Selection[0][1]:
-				xmi, ymi = min(self.GraphX(self.Selection[0][0]), self.GraphX(Event.x)), min(self.GraphY(self.Selection[0][1]), self.GraphY(Event.y))
-				xma, yma = max(self.GraphX(self.Selection[0][0]), self.GraphX(Event.x)), max(self.GraphY(self.Selection[0][1]), self.GraphY(Event.y))
-				self.xMin, self.yMin, self.xMax, self.yMax = xmi, ymi, xma, yma
-				ParameterEntriesRepopulate()
-				Graph.Plot()
-				self.Selection[1][0] = None
-				self.Selection[0][0] = None
+			if event.button == 1 and event.x != self.selection[0][0] and event.y != self.selection[0][1]:
+				xmi, ymi = min(self.graph_x(self.selection[0][0]), self.graph_x(event.x)), min(self.graph_y(self.selection[0][1]), self.graph_y(event.y))
+				xma, yma = max(self.graph_x(self.selection[0][0]), self.graph_x(event.x)), max(self.graph_y(self.selection[0][1]), self.graph_y(event.y))
+				self.x_min, self.y_min, self.x_max, self.y_max = xmi, ymi, xma, yma
+				parameter_entries_repopulate()
+				graph.plot()
+				self.selection[1][0] = None
+				self.selection[0][0] = None
 
 		# Draw rectangle during mouse movement
-		def MotionNotifyEvent(Widget, Event):
+		def motion_notify_event(widget, event):
 			
-			if Event.is_hint:
-				x, y, State = Event.window.get_pointer()
+			if event.is_hint:
+				x, y, state = event.window.get_pointer()
 			else:
-				x = Event.x
-				y = Event.y
-				State = Event.state
+				x = event.x
+				y = event.y
+				state = event.state
 
-			if State & gtk.gdk.BUTTON1_MASK and self.Selection[0][0] is not None:
-				gc = self.DrawingArea.get_style().black_gc
+			if state & gtk.gdk.BUTTON1_MASK and self.selection[0][0] is not None:
+				gc = self.drawing_area.get_style().black_gc
 				gc.set_function(gtk.gdk.INVERT)
-				if self.Selection[1][0] is not None:
-					x0 = min(self.Selection[1][0], self.Selection[0][0])
-					y0 = min(self.Selection[1][1], self.Selection[0][1])
-					w = abs(self.Selection[1][0] - self.Selection[0][0])
-					h = abs(self.Selection[1][1] - self.Selection[0][1])
-					self.PixMap.draw_rectangle(gc, False, x0, y0, w, h)
-				x0 = min(self.Selection[0][0], int(x))
-				y0 = min(self.Selection[0][1], int(y))
-				w = abs(int(x) - self.Selection[0][0])
-				h = abs(int(y) - self.Selection[0][1])
-				self.PixMap.draw_rectangle(gc, False, x0, y0, w, h)
-				self.Selection[1][0], self.Selection[1][1] = int(x), int(y)
-				self.DrawDrawable()
+				if self.selection[1][0] is not None:
+					x0 = min(self.selection[1][0], self.selection[0][0])
+					y0 = min(self.selection[1][1], self.selection[0][1])
+					w = abs(self.selection[1][0] - self.selection[0][0])
+					h = abs(self.selection[1][1] - self.selection[0][1])
+					self.pix_map.draw_rectangle(gc, False, x0, y0, w, h)
+				x0 = min(self.selection[0][0], int(x))
+				y0 = min(self.selection[0][1], int(y))
+				w = abs(int(x) - self.selection[0][0])
+				h = abs(int(y) - self.selection[0][1])
+				self.pix_map.draw_rectangle(gc, False, x0, y0, w, h)
+				self.selection[1][0], self.selection[1][1] = int(x), int(y)
+				self.draw_drawable()
 				
-		self.PrevY = [None, None, None]
+		self.prev_y = [None, None, None]
 		
 		# Marked area point[0, 1][x, y]
-		self.Selection = [[None, None], [None, None]]
+		self.selection = [[None, None], [None, None]]
 		
-		self.DrawingArea = gtk.DrawingArea()		
-		self.DrawingArea.connect("expose_event", ExposeEvent)
-		self.DrawingArea.connect("configure_event", ConfigureEvent)
-		self.DrawingArea.connect("button_press_event", ButtonPressEvent)
-		self.DrawingArea.connect("button_release_event", ButtonReleaseEvent)
-		self.DrawingArea.connect("motion_notify_event", MotionNotifyEvent)
-		self.DrawingArea.set_events(gtk.gdk.EXPOSURE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK |gtk.gdk.POINTER_MOTION_HINT_MASK)
-		self.ScaleStyle = "dec"
+		self.drawing_area = gtk.DrawingArea()		
+		self.drawing_area.connect("expose_event", expose_event)
+		self.drawing_area.connect("configure_event", configure_event)
+		self.drawing_area.connect("button_press_event", button_press_event)
+		self.drawing_area.connect("button_release_event", button_release_event)
+		self.drawing_area.connect("motion_notify_event", motion_notify_event)
+		self.drawing_area.set_events(gtk.gdk.EXPOSURE_MASK | gtk.gdk.LEAVE_NOTIFY_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.BUTTON_RELEASE_MASK | gtk.gdk.POINTER_MOTION_MASK |gtk.gdk.POINTER_MOTION_HINT_MASK)
+		self.scale_style = "dec"
 		
-	def DrawDrawable(self):
-		x, y, w, h = self.DrawingArea.get_allocation()
-		self.DrawingArea.window.draw_drawable(self.DrawingArea.get_style().fg_gc[gtk.STATE_NORMAL], self.PixMap, 0, 0, 0, 0, w, h)
+	def draw_drawable(self):
+		x, y, w, h = self.drawing_area.get_allocation()
+		self.drawing_area.window.draw_drawable(self.drawing_area.get_style().fg_gc[gtk.STATE_NORMAL], self.pix_map, 0, 0, 0, 0, w, h)
 		
-	def Plot(self):
-		self.PixMap.draw_rectangle(self.DrawingArea.get_style().white_gc, True, 0, 0, self.CanvasWidth, self.CanvasHeight)
+	def plot(self):
+		self.pix_map.draw_rectangle(self.drawing_area.get_style().white_gc, True, 0, 0, self.canvas_width, self.canvas_height)
 				
-		if (self.ScaleStyle == "cust"):
+		if (self.scale_style == "cust"):
 			
 			#draw cross
-			self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0))),0),(int(round(self.CanvasX(0))),self.CanvasHeight)])
-			self.PixMap.draw_lines(self.gc['black'], [(0,int(round(self.CanvasY(0)))),(self.CanvasWidth,int(round(self.CanvasY(0))))])
+			self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(0))),0),(int(round(self.canvas_x(0))),self.canvas_height)])
+			self.pix_map.draw_lines(self.gc['black'], [(0,int(round(self.canvas_y(0)))),(self.canvas_width,int(round(self.canvas_y(0))))])
 			# old style axis marks
-			iv = self.xScale * self.CanvasWidth/(self.xMax - self.xMin) # pixel interval between marks
-			os = self.CanvasX(0) % iv # pixel offset of first mark 
+			iv = self.x_scale * self.canvas_width/(self.x_max - self.x_min) # pixel interval between marks
+			os = self.canvas_x(0) % iv # pixel offset of first mark 
 			# loop over each mark.
-			for i in xrange(int(self.CanvasWidth / iv + 1)):
+			for i in xrange(int(self.canvas_width / iv + 1)):
 				#multiples of iv, cause adding of any error in iv, so keep iv as float
 				# use round(), to get to closest pixel, int() to prevent warning
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.CanvasY(0) - 5))), (int(round(os + i * iv)), int(round(self.CanvasY(0) + 5)))])
+				self.pix_map.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.canvas_y(0) - 5))), (int(round(os + i * iv)), int(round(self.canvas_y(0) + 5)))])
 			
 			# and the y-axis
-			iv = self.yScale * self.CanvasHeight/(self.yMax - self.yMin)
-			os = self.CanvasY(0) % iv
-			for i in xrange(int(self.CanvasHeight / iv + 1)):
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(0) - 5)), int(round(i * iv + os))), (int(round(self.CanvasX(0) + 5)), int(round(i * iv + os)))])			
+			iv = self.y_scale * self.canvas_height/(self.y_max - self.y_min)
+			os = self.canvas_y(0) % iv
+			for i in xrange(int(self.canvas_height / iv + 1)):
+				self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(0) - 5)), int(round(i * iv + os))), (int(round(self.canvas_x(0) + 5)), int(round(i * iv + os)))])			
 		
 		else:
 			#new style
 			factor = 1
-			if (self.ScaleStyle == "rad"): factor = pi
+			if (self.scale_style == "rad"): factor = pi
 
 			# where to put the numbers
 			numbers_x_pos = -10
 			numbers_y_pos = 10
 			
 			# where to center the axis
-			center_x_pix = int(round(self.CanvasX(0)))
-			center_y_pix = int(round(self.CanvasY(0)))			
+			center_x_pix = int(round(self.canvas_x(0)))
+			center_y_pix = int(round(self.canvas_y(0)))			
 			if (center_x_pix < 5): center_x_pix = 5
 			if (center_x_pix < 20):numbers_x_pos = 10
 			if (center_y_pix < 5): center_y_pix = 5
-			if (center_x_pix > self.CanvasWidth - 5): center_x_pix = self.CanvasWidth - 5
-			if (center_y_pix > self.CanvasHeight -5): center_y_pix = self.CanvasHeight - 5;
-			if (center_y_pix > self.CanvasHeight -20): numbers_y_pos = - 10
+			if (center_x_pix > self.canvas_width - 5): center_x_pix = self.canvas_width - 5
+			if (center_y_pix > self.canvas_height -5): center_y_pix = self.canvas_height - 5;
+			if (center_y_pix > self.canvas_height -20): numbers_y_pos = - 10
 			
 			# draw cross
-			self.PixMap.draw_lines(self.gc['black'], [(center_x_pix,0),(center_x_pix,self.CanvasHeight)])
-			self.PixMap.draw_lines(self.gc['black'], [(0,center_y_pix),(self.CanvasWidth,center_y_pix)])			
+			self.pix_map.draw_lines(self.gc['black'], [(center_x_pix,0),(center_x_pix,self.canvas_height)])
+			self.pix_map.draw_lines(self.gc['black'], [(0,center_y_pix),(self.canvas_width,center_y_pix)])			
 				
-			for i in marks(self.xMin/factor,self.xMax/factor):
+			for i in marks(self.x_min/factor,self.x_max/factor):
 				label = '%g' % i
-				if (self.ScaleStyle == "rad"): label += '\xCF\x80'
+				if (self.scale_style == "rad"): label += '\xCF\x80'
 				i = i * factor
 
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), center_y_pix - 5), (int(round(self.CanvasX(i))), center_y_pix + 5)])
+				self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(i))), center_y_pix - 5), (int(round(self.canvas_x(i))), center_y_pix + 5)])
 				
 				self.layout.set_text(label)
 				extents = self.layout.get_pixel_extents()[1]
 				if (numbers_y_pos < 0): adjust = extents[3]
 				else: adjust = 0
-				self.PixMap.draw_layout(self.gc['black'],int(round(self.CanvasX(i))), center_y_pix + numbers_y_pos - adjust,self.layout)
+				self.pix_map.draw_layout(self.gc['black'],int(round(self.canvas_x(i))), center_y_pix + numbers_y_pos - adjust,self.layout)
 
-			for i in marks(self.yMin,self.yMax):
+			for i in marks(self.y_min,self.y_max):
 				label = '%g' % i
 
-				self.PixMap.draw_lines(self.gc['black'], [(center_x_pix - 5, int(round(self.CanvasY(i)))), (center_x_pix + 5, int(round(self.CanvasY(i))))])
+				self.pix_map.draw_lines(self.gc['black'], [(center_x_pix - 5, int(round(self.canvas_y(i)))), (center_x_pix + 5, int(round(self.canvas_y(i))))])
 				
 				self.layout.set_text(label)
 				extents = self.layout.get_pixel_extents()[1]
 				if (numbers_x_pos < 0): adjust = extents[2]
 				else: adjust = 0
-				self.PixMap.draw_layout(self.gc['black'],center_x_pix +numbers_x_pos - adjust,int(round(self.CanvasY(i))),self.layout)
+				self.pix_map.draw_layout(self.gc['black'],center_x_pix +numbers_x_pos - adjust,int(round(self.canvas_y(i))),self.layout)
 
 			# minor marks
-			for i in marks(self.xMin/factor,self.xMax/factor,minor=10):
+			for i in marks(self.x_min/factor,self.x_max/factor,minor=10):
 				i = i * factor
-				self.PixMap.draw_lines(self.gc['black'], [(int(round(self.CanvasX(i))), center_y_pix - 2), (int(round(self.CanvasX(i))), center_y_pix +2)])
+				self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(i))), center_y_pix - 2), (int(round(self.canvas_x(i))), center_y_pix +2)])
 
-			for i in marks(self.yMin,self.yMax,minor=10):
+			for i in marks(self.y_min,self.y_max,minor=10):
 				label = '%g' % i
-				self.PixMap.draw_lines(self.gc['black'], [(center_x_pix - 2, int(round(self.CanvasY(i)))), (center_x_pix +2, int(round(self.CanvasY(i))))])
+				self.pix_map.draw_lines(self.gc['black'], [(center_x_pix - 2, int(round(self.canvas_y(i)))), (center_x_pix +2, int(round(self.canvas_y(i))))])
 				
 		plots = []
 		# precompile the functions
@@ -288,210 +288,210 @@ class GraphClass:
 		except:
 			compiled_y3 = None
 		
-		self.PrevY = [None, None, None]
+		self.prev_y = [None, None, None]
 		
 		if enable_profiling:
 			start_graph = time()
 		
 		if len(plots) != 0:
-			for i in xrange(0,self.CanvasWidth,x_res):
-				x = self.GraphX(i + 1)
+			for i in xrange(0,self.canvas_width,x_res):
+				x = self.graph_x(i + 1)
 				for e in plots:
 					safe_dict['x']=x
 					try:
 						y = eval(e[0],{"__builtins__":{}},safe_dict)
-						yC = int(round(self.CanvasY(y)))
+						y_c = int(round(self.canvas_y(y)))
 						
-						if yC < 0 or yC > self.CanvasHeight:
+						if y_c < 0 or y_c > self.canvas_height:
 							raise ValueError
 						
-						if ConnectPoints and self.PrevY[e[1]] is not None:
-							self.PixMap.draw_lines(e[2], [(i, self.PrevY[e[1]]), (i + x_res, yC)])
+						if connect_points and self.prev_y[e[1]] is not None:
+							self.pix_map.draw_lines(e[2], [(i, self.prev_y[e[1]]), (i + x_res, y_c)])
 						else:
-							self.PixMap.draw_points(e[2], [(i + x_res, yC)])
-						self.PrevY[e[1]] = yC
+							self.pix_map.draw_points(e[2], [(i + x_res, y_c)])
+						self.prev_y[e[1]] = y_c
 					except:
 						#print "Error at %d: %s" % (x, sys.exc_value)
-						self.PrevY[e[1]] = None
+						self.prev_y[e[1]] = None
 					
 		if enable_profiling:
 			print "time to draw graph:", (time() - start_graph) * 1000, "ms"
 					
-		self.DrawDrawable()
+		self.draw_drawable()
 
 		
-	def CanvasX(self, x):
+	def canvas_x(self, x):
 		"Calculate position on canvas to point on graph"
-		return (x - self.xMin) * self.CanvasWidth/(self.xMax - self.xMin)
+		return (x - self.x_min) * self.canvas_width/(self.x_max - self.x_min)
 
-	def CanvasY(self, y):
-		return (self.yMax - y) * self.CanvasHeight/(self.yMax - self.yMin)
+	def canvas_y(self, y):
+		return (self.y_max - y) * self.canvas_height/(self.y_max - self.y_min)
 		
-	def CanvasPoint(self, x, y):
-		return (self.CanvasX(x), self.CanvasY(y))
+	def canvas_point(self, x, y):
+		return (self.canvas_x(x), self.canvas_y(y))
 	
-	def GraphX(self, x):
+	def graph_x(self, x):
 		"Calculate position on graph from point on canvas"
-		return x  * (self.xMax - self.xMin) / self.CanvasWidth + self.xMin
+		return x  * (self.x_max - self.x_min) / self.canvas_width + self.x_min
 		
-	def GraphY(self, y):
-		return self.yMax - (y * (self.yMax - self.yMin) / self.CanvasHeight)
+	def graph_y(self, y):
+		return self.y_max - (y * (self.y_max - self.y_min) / self.canvas_height)
 		
 		
-def MenuToolbarCreate():
+def menu_toolbar_create():
 
-	AppWin.MenuMain = gtk.MenuBar()
+	app_win.menu_main = gtk.MenuBar()
 	
-	MenuFile = gtk.Menu()	
-	MenuItemFile = gtk.MenuItem("_File")
-	MenuItemFile.set_submenu(MenuFile)
+	menu_file = gtk.Menu()	
+	menu_item_file = gtk.MenuItem("_File")
+	menu_item_file.set_submenu(menu_file)
 	
-	Actions.Save = gtk.Action("Save", "_Save", "Save graph as bitmap", gtk.STOCK_SAVE)
-	Actions.Save.connect ("activate", Save)
-	Actions.add_action(Actions.Save)
-	MenuItemSave = Actions.Save.create_menu_item()
-	MenuItemSave.add_accelerator("activate", AppWin.AccelGroup, ord("S"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuFile.append(MenuItemSave)
+	actions.save = gtk.Action("Save", "_Save", "Save graph as bitmap", gtk.STOCK_SAVE)
+	actions.save.connect ("activate", save)
+	actions.add_action(actions.save)
+	menu_item_save = actions.save.create_menu_item()
+	menu_item_save.add_accelerator("activate", app_win.accel_group, ord("S"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_file.append(menu_item_save)
 	
-	Actions.Quit = gtk.Action("Quit", "_Quit", "Quit Application", gtk.STOCK_QUIT)
-	Actions.Quit.connect ("activate", QuitDlg)
-	Actions.add_action(Actions.Quit)
-	MenuItemQuit = Actions.Quit.create_menu_item()
-	MenuItemQuit.add_accelerator("activate", AppWin.AccelGroup, ord("Q"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuFile.append(MenuItemQuit)
+	actions.quit = gtk.Action("Quit", "_Quit", "Quit Application", gtk.STOCK_QUIT)
+	actions.quit.connect ("activate", quit_dlg)
+	actions.add_action(actions.quit)
+	menuItem_quit = actions.quit.create_menu_item()
+	menuItem_quit.add_accelerator("activate", app_win.accel_group, ord("Q"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_file.append(menuItem_quit)
 	
-	MenuGraph = gtk.Menu()	
-	MenuItemGraph = gtk.MenuItem("_Graph")
-	MenuItemGraph.set_submenu(MenuGraph)
+	menu_graph = gtk.Menu()	
+	menu_item_graph = gtk.MenuItem("_Graph")
+	menu_item_graph.set_submenu(menu_graph)
 	
-	Actions.Plot = gtk.Action("Plot", "P_lot", "Plot Functions", gtk.STOCK_REFRESH)
-	Actions.Plot.connect ("activate", Plot)
-	Actions.add_action(Actions.Plot)
-	MenuItemPlot = Actions.Plot.create_menu_item()
-	MenuItemPlot.add_accelerator("activate", AppWin.AccelGroup, ord("l"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuGraph.append(MenuItemPlot)
+	actions.plot = gtk.Action("Plot", "P_lot", "Plot Functions", gtk.STOCK_REFRESH)
+	actions.plot.connect ("activate", plot)
+	actions.add_action(actions.plot)
+	menu_item_plot = actions.plot.create_menu_item()
+	menu_item_plot.add_accelerator("activate", app_win.accel_group, ord("l"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_graph.append(menu_item_plot)
 	
-	Actions.Evaluate = gtk.Action("Evaluate", "_Evaluate", "Evaluate Functions", gtk.STOCK_EXECUTE)
-	Actions.Evaluate.connect ("activate", Evaluate)
-	Actions.add_action(Actions.Evaluate)
-	MenuItemEvaluate = Actions.Evaluate.create_menu_item()
-	MenuItemEvaluate.add_accelerator("activate", AppWin.AccelGroup, ord("e"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuGraph.append(MenuItemEvaluate)
+	actions.evaluate = gtk.Action("Evaluate", "_Evaluate", "Evaluate Functions", gtk.STOCK_EXECUTE)
+	actions.evaluate.connect ("activate", evaluate)
+	actions.add_action(actions.evaluate)
+	menu_item_evaluate = actions.evaluate.create_menu_item()
+	menu_item_evaluate.add_accelerator("activate", app_win.accel_group, ord("e"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_graph.append(menu_item_evaluate)
 	
-	Actions.ZoomIn = gtk.Action("ZoomIn", "Zoom _In", "Zoom In", gtk.STOCK_ZOOM_IN)
-	Actions.ZoomIn.connect ("activate", ZoomIn)
-	Actions.add_action(Actions.ZoomIn)
-	MenuItemZoomIn = Actions.ZoomIn.create_menu_item()
-	MenuItemZoomIn.add_accelerator("activate", AppWin.AccelGroup, ord("+"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuGraph.append(MenuItemZoomIn)
+	actions.zoom_in = gtk.Action("zoom_in", "Zoom _In", "Zoom In", gtk.STOCK_ZOOM_IN)
+	actions.zoom_in.connect ("activate", zoom_in)
+	actions.add_action(actions.zoom_in)
+	menu_item_zoomin = actions.zoom_in.create_menu_item()
+	menu_item_zoomin.add_accelerator("activate", app_win.accel_group, ord("+"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_graph.append(menu_item_zoomin)
 	
-	Actions.ZoomOut = gtk.Action("ZoomOut", "Zoom _Out", "Zoom Out", gtk.STOCK_ZOOM_OUT)
-	Actions.ZoomOut.connect ("activate", ZoomOut)
-	Actions.add_action(Actions.ZoomOut)
-	MenuItemZoomOut = Actions.ZoomOut.create_menu_item()
-	MenuItemZoomOut.add_accelerator("activate", AppWin.AccelGroup, ord("-"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuGraph.append(MenuItemZoomOut)
+	actions.zoom_out = gtk.Action("zoom_out", "Zoom _Out", "Zoom Out", gtk.STOCK_ZOOM_OUT)
+	actions.zoom_out.connect ("activate", zoom_out)
+	actions.add_action(actions.zoom_out)
+	menu_item_zoomout = actions.zoom_out.create_menu_item()
+	menu_item_zoomout.add_accelerator("activate", app_win.accel_group, ord("-"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_graph.append(menu_item_zoomout)
 	
-	Actions.ZoomReset = gtk.Action("ZoomReset", "Zoom _Reset", "Zoom Reset", gtk.STOCK_ZOOM_100)
-	Actions.ZoomReset.connect ("activate", ZoomReset)
-	Actions.add_action(Actions.ZoomReset)
-	MenuItemZoomReset = Actions.ZoomReset.create_menu_item()
-	MenuItemZoomReset.add_accelerator("activate", AppWin.AccelGroup, ord("r"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
-	MenuGraph.append(MenuItemZoomReset)
+	actions.zoom_reset = gtk.Action("zoom_reset", "Zoom _Reset", "Zoom Reset", gtk.STOCK_ZOOM_100)
+	actions.zoom_reset.connect ("activate", zoom_reset)
+	actions.add_action(actions.zoom_reset)
+	menu_item_zoomreset = actions.zoom_reset.create_menu_item()
+	menu_item_zoomreset.add_accelerator("activate", app_win.accel_group, ord("r"), gtk.gdk.CONTROL_MASK, gtk.ACCEL_VISIBLE)
+	menu_graph.append(menu_item_zoomreset)
 	
-	MenuItemToggleConnect = gtk.CheckMenuItem("_Connect Points")
-	MenuItemToggleConnect.set_active(True)
-	MenuItemToggleConnect.connect ("toggled", ToggleConnect)
-	MenuGraph.append(MenuItemToggleConnect)
+	menu_item_toggle_connect = gtk.CheckMenuItem("_Connect Points")
+	menu_item_toggle_connect.set_active(True)
+	menu_item_toggle_connect.connect ("toggled", toggle_connect)
+	menu_graph.append(menu_item_toggle_connect)
 	
-	MenuScaleStyle = gtk.Menu()
-	MenuItemScaleStyle = gtk.MenuItem("Scale Style")
-	MenuItemScaleStyle.set_submenu(MenuScaleStyle)
-	MenuGraph.append(MenuItemScaleStyle)
+	menu_scale_style = gtk.Menu()
+	menu_item_scale_style = gtk.MenuItem("Scale Style")
+	menu_item_scale_style.set_submenu(menu_scale_style)
+	menu_graph.append(menu_item_scale_style)
 	
-	Actions.Dec = gtk.Action("Dec", "Decimal", "Decimal",None)
-	Actions.Dec.connect ("activate", ScaleDec)
-	Actions.add_action(Actions.Dec)
-	MenuItemDec = Actions.Dec.create_menu_item()
-	MenuScaleStyle.append(MenuItemDec)
+	actions.dec = gtk.Action("Dec", "Decimal", "Decimal",None)
+	actions.dec.connect ("activate", scale_dec)
+	actions.add_action(actions.dec)
+	menu_item_dec = actions.dec.create_menu_item()
+	menu_scale_style.append(menu_item_dec)
 	
-	Actions.Rad = gtk.Action("Rad", "Radians", "Radians",None)
-	Actions.Rad.connect ("activate", ScaleRad)
-	Actions.add_action(Actions.Rad)
-	MenuItemRad = Actions.Rad.create_menu_item()
-	MenuScaleStyle.append(MenuItemRad)	
+	actions.rad = gtk.Action("Rad", "Radians", "Radians",None)
+	actions.rad.connect ("activate", scale_rad)
+	actions.add_action(actions.rad)
+	menu_item_rad = actions.rad.create_menu_item()
+	menu_scale_style.append(menu_item_rad)	
 	
-	Actions.Cust = gtk.Action("Cust", "Custom", "Custom",None)
-	Actions.Cust.connect ("activate", ScaleCust)
-	Actions.add_action(Actions.Cust)
-	MenuItemCust = Actions.Cust.create_menu_item()
-	MenuScaleStyle.append(MenuItemCust)
+	actions.cust = gtk.Action("Cust", "Custom", "Custom",None)
+	actions.cust.connect ("activate", scale_cust)
+	actions.add_action(actions.cust)
+	menu_item_cust = actions.cust.create_menu_item()
+	menu_scale_style.append(menu_item_cust)
 	
-	MenuHelp = gtk.Menu()
-	MenuItemHelp = gtk.MenuItem("_Help")
-	MenuItemHelp.set_submenu(MenuHelp)
+	menu_help = gtk.Menu()
+	menu_item_help = gtk.MenuItem("_Help")
+	menu_item_help.set_submenu(menu_help)
 
-	Actions.Help = gtk.Action("Help", "_Contents", "Help Contents", gtk.STOCK_HELP)
-	Actions.Help.connect ("activate", ShowYelp)
-	Actions.add_action(Actions.Help)
-	MenuItemContents = Actions.Help.create_menu_item()
-	MenuItemContents.add_accelerator("activate", AppWin.AccelGroup, gtk.gdk.keyval_from_name("F1"), 0, gtk.ACCEL_VISIBLE)
-	MenuHelp.append(MenuItemContents)
+	actions.Help = gtk.Action("Help", "_Contents", "Help Contents", gtk.STOCK_HELP)
+	actions.Help.connect ("activate", show_yelp)
+	actions.add_action(actions.Help)
+	menu_item_contents = actions.Help.create_menu_item()
+	menu_item_contents.add_accelerator("activate", app_win.accel_group, gtk.gdk.keyval_from_name("F1"), 0, gtk.ACCEL_VISIBLE)
+	menu_help.append(menu_item_contents)
 
-	Actions.About = gtk.Action("About", "_About", "About Box", gtk.STOCK_ABOUT)
-	Actions.About.connect ("activate", ShowAboutDialog)
-	Actions.add_action(Actions.About)
-	MenuItemAbout = Actions.About.create_menu_item()
-	MenuHelp.append(MenuItemAbout)
+	actions.about = gtk.Action("About", "_About", "About Box", gtk.STOCK_ABOUT)
+	actions.about.connect ("activate", show_about_dialog)
+	actions.add_action(actions.about)
+	menu_item_about = actions.about.create_menu_item()
+	menu_help.append(menu_item_about)
 	
-	AppWin.MenuMain.append(MenuItemFile)
-	AppWin.MenuMain.append(MenuItemGraph)
-	AppWin.MenuMain.append(MenuItemHelp)
+	app_win.menu_main.append(menu_item_file)
+	app_win.menu_main.append(menu_item_graph)
+	app_win.menu_main.append(menu_item_help)
 	
-	AppWin.ToolBar = gtk.Toolbar()
-	AppWin.ToolBar.insert(Actions.Plot.create_tool_item(), -1)
-	AppWin.ToolBar.insert(Actions.Evaluate.create_tool_item(), -1)
-	AppWin.ToolBar.insert(gtk.SeparatorToolItem(), -1)
-	AppWin.ToolBar.insert(Actions.ZoomIn.create_tool_item(), -1)
-	AppWin.ToolBar.insert(Actions.ZoomOut.create_tool_item(), -1)
-	AppWin.ToolBar.insert(Actions.ZoomReset.create_tool_item(), -1)
-	AppWin.ToolBar.insert(gtk.SeparatorToolItem(), -1)
-	AppWin.ToolBar.insert(Actions.Quit.create_tool_item(), -1)
-	
-
-def Plot(Widget, Event=None):
-	global xMax, xMin, xScale, yMax, yMin, yScale, y1, y2, y3
-	
-	xMax = AppWin.xMaxEntry.get_text()
-	xMin = AppWin.xMinEntry.get_text()
-	xScale = AppWin.xScaleEntry.get_text()
-
-	yMax = AppWin.yMaxEntry.get_text()
-	yMin = AppWin.yMinEntry.get_text()
-	yScale = AppWin.yScaleEntry.get_text()
-	
-	Graph.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
-	Graph.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
-	Graph.xScale = eval(xScale,{"__builtins__":{}},safe_dict)
-
-	Graph.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
-	Graph.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
-	Graph.yScale = eval(yScale,{"__builtins__":{}},safe_dict)
-
-	y1 = AppWin.Y1Entry.get_text()
-	y2 = AppWin.Y2Entry.get_text()
-	y3 = AppWin.Y3Entry.get_text()
-	
-	Graph.Plot()
+	app_win.tool_bar = gtk.Toolbar()
+	app_win.tool_bar.insert(actions.plot.create_tool_item(), -1)
+	app_win.tool_bar.insert(actions.evaluate.create_tool_item(), -1)
+	app_win.tool_bar.insert(gtk.SeparatorToolItem(), -1)
+	app_win.tool_bar.insert(actions.zoom_in.create_tool_item(), -1)
+	app_win.tool_bar.insert(actions.zoom_out.create_tool_item(), -1)
+	app_win.tool_bar.insert(actions.zoom_reset.create_tool_item(), -1)
+	app_win.tool_bar.insert(gtk.SeparatorToolItem(), -1)
+	app_win.tool_bar.insert(actions.quit.create_tool_item(), -1)
 	
 
-def Evaluate(Widget, Event=None):
+def plot(widget, event=None):
+	global x_max, x_min, x_scale, y_max, y_min, y_scale, y1, y2, y3
+	
+	x_max = app_win.x_max_entry.get_text()
+	x_min = app_win.x_min_entry.get_text()
+	x_scale = app_win.x_scale_entry.get_text()
+
+	y_max = app_win.y_max_entry.get_text()
+	y_min = app_win.y_min_entry.get_text()
+	y_scale = app_win.y_scale_entry.get_text()
+	
+	graph.x_max = eval(x_max,{"__builtins__":{}},safe_dict)
+	graph.x_min = eval(x_min,{"__builtins__":{}},safe_dict)
+	graph.x_scale = eval(x_scale,{"__builtins__":{}},safe_dict)
+
+	graph.y_max = eval(y_max,{"__builtins__":{}},safe_dict)
+	graph.y_min = eval(y_min,{"__builtins__":{}},safe_dict)
+	graph.y_scale = eval(y_scale,{"__builtins__":{}},safe_dict)
+
+	y1 = app_win.y1_entry.get_text()
+	y2 = app_win.y2_entry.get_text()
+	y3 = app_win.y3_entry.get_text()
+	
+	graph.plot()
+	
+
+def evaluate(widget, event=None):
 	"Evaluate a given x for the three functions"
 	
-	def EntryChanged(self):
-		for e in ((y1, DlgWin.Y1Entry), (y2, DlgWin.Y2Entry), (y3, DlgWin.Y3Entry)):
+	def entry_changed(self):
+		for e in ((y1, dlg_win.y1_entry), (y2, dlg_win.y2_entry), (y3, dlg_win.y3_entry)):
 			try:
-				x = float(DlgWin.XEntry.get_text())
+				x = float(dlg_win.x_entry.get_text())
 				safe_dict['x']=x
 				e[1].set_text(str(eval(e[0],{"__builtins__":{}},safe_dict)))
 			except:
@@ -500,142 +500,142 @@ def Evaluate(Widget, Event=None):
 				else:
 					e[1].set_text("")
 				
-	def Close(self):
-		DlgWin.destroy()
+	def close(self):
+		dlg_win.destroy()
 		
-	DlgWin = gtk.Window(gtk.WINDOW_TOPLEVEL)
-	DlgWin.set_title("Evaluate")
-	DlgWin.connect("destroy", Close)
+	dlg_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+	dlg_win.set_title("Evaluate")
+	dlg_win.connect("destroy", close)
 	
-	DlgWin.XEntry = gtk.Entry()
-	DlgWin.XEntry.set_size_request(200, 24)
-	DlgWin.XEntry.connect("changed", EntryChanged)
-	DlgWin.Y1Entry = gtk.Entry()
-	DlgWin.Y1Entry.set_size_request(200, 24)
-	DlgWin.Y1Entry.set_sensitive(False)
-	DlgWin.Y2Entry = gtk.Entry()
-	DlgWin.Y2Entry.set_size_request(200, 24)
-	DlgWin.Y2Entry.set_sensitive(False)
-	DlgWin.Y3Entry = gtk.Entry()
-	DlgWin.Y3Entry.set_size_request(200, 24)
-	DlgWin.Y3Entry.set_sensitive(False)
+	dlg_win.x_entry = gtk.Entry()
+	dlg_win.x_entry.set_size_request(200, 24)
+	dlg_win.x_entry.connect("changed", entry_changed)
+	dlg_win.y1_entry = gtk.Entry()
+	dlg_win.y1_entry.set_size_request(200, 24)
+	dlg_win.y1_entry.set_sensitive(False)
+	dlg_win.y2_entry = gtk.Entry()
+	dlg_win.y2_entry.set_size_request(200, 24)
+	dlg_win.y2_entry.set_sensitive(False)
+	dlg_win.y3_entry = gtk.Entry()
+	dlg_win.y3_entry.set_size_request(200, 24)
+	dlg_win.y3_entry.set_sensitive(False)
 	
-	Table = gtk.Table(2, 5)
-	l = gtk.Label("x = ")
-	l.set_alignment(0, .5)
-	Table.attach(l, 0, 1, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(DlgWin.XEntry, 1, 2, 0, 1)
-	l = gtk.Label("y1 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
-	Table.attach(l, 0, 1, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(DlgWin.Y1Entry, 1, 2, 1, 2)
-	l = gtk.Label("y2 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("red"))
-	Table.attach(l, 0, 1, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(DlgWin.Y2Entry, 1, 2, 2, 3)
-	l = gtk.Label("y3 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("DarkGreen"))
-	Table.attach(l, 0, 1, 3, 4, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(DlgWin.Y3Entry, 1, 2, 3, 4)
+	table = gtk.Table(2, 5)
+	label = gtk.Label("x = ")
+	label.set_alignment(0, .5)
+	table.attach(label, 0, 1, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(dlg_win.x_entry, 1, 2, 0, 1)
+	label = gtk.Label("y1 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
+	table.attach(label, 0, 1, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(dlg_win.y1_entry, 1, 2, 1, 2)
+	label = gtk.Label("y2 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("red"))
+	table.attach(label, 0, 1, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(dlg_win.y2_entry, 1, 2, 2, 3)
+	label = gtk.Label("y3 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("DarkGreen"))
+	table.attach(label, 0, 1, 3, 4, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(dlg_win.y3_entry, 1, 2, 3, 4)
 	
-	Table.set_border_width(24)	
-	DlgWin.add(Table)	
-	DlgWin.show_all()
+	table.set_border_width(24)	
+	dlg_win.add(table)	
+	dlg_win.show_all()
 
 
-def ZoomIn(Widget, Event=None):
+def zoom_in(widget, event=None):
 	"Narrow the plotted section by half"
-	center_x = (Graph.xMin + Graph.xMax) / 2
-	center_y = (Graph.yMin + Graph.yMax) / 2
-	range_x = (Graph.xMax - Graph.xMin)
-	range_y = (Graph.yMax - Graph.yMin)
+	center_x = (graph.x_min + graph.x_max) / 2
+	center_y = (graph.y_min + graph.y_max) / 2
+	range_x = (graph.x_max - graph.x_min)
+	range_y = (graph.y_max - graph.y_min)
 	
-	Graph.xMin = center_x - (range_x / 4)
-	Graph.xMax = center_x + (range_x / 4)
-	Graph.yMin = center_y - (range_y / 4)
-	Graph.yMax = center_y +(range_y / 4)
+	graph.x_min = center_x - (range_x / 4)
+	graph.x_max = center_x + (range_x / 4)
+	graph.y_min = center_y - (range_y / 4)
+	graph.y_max = center_y +(range_y / 4)
 	
-	ParameterEntriesRepopulate()
-	Graph.Plot()
+	parameter_entries_repopulate()
+	graph.plot()
 
 
-def ZoomOut(Widget, Event=None):
+def zoom_out(widget, event=None):
 	"Double the plotted section"
-	center_x = (Graph.xMin + Graph.xMax) / 2
-	center_y = (Graph.yMin + Graph.yMax) / 2
-	range_x = (Graph.xMax - Graph.xMin)
-	range_y = (Graph.yMax - Graph.yMin)
+	center_x = (graph.x_min + graph.x_max) / 2
+	center_y = (graph.y_min + graph.y_max) / 2
+	range_x = (graph.x_max - graph.x_min)
+	range_y = (graph.y_max - graph.y_min)
 	
-	Graph.xMin = center_x - (range_x)
-	Graph.xMax = center_x + (range_x)
-	Graph.yMin = center_y - (range_y)
-	Graph.yMax = center_y +(range_y)	
+	graph.x_min = center_x - (range_x)
+	graph.x_max = center_x + (range_x)
+	graph.y_min = center_y - (range_y)
+	graph.y_max = center_y +(range_y)	
 	
-	ParameterEntriesRepopulate()
-	Graph.Plot()
+	parameter_entries_repopulate()
+	graph.plot()
 
 
-def ZoomReset(Widget, Event=None):
+def zoom_reset(widget, event=None):
 	"Set the range back to the user's input"
-   
-	Graph.xMin = eval(xMin,{"__builtins__":{}},safe_dict)
-	Graph.yMin = eval(yMin,{"__builtins__":{}},safe_dict)
-	Graph.xMax = eval(xMax,{"__builtins__":{}},safe_dict)
-	Graph.yMax = eval(yMax,{"__builtins__":{}},safe_dict)
-	ParameterEntriesPopulate()
-	Graph.Plot()
 
-def ScaleDec(Widget, Event=None):
-	Graph.ScaleStyle = "dec"
-	AppWin.ScaleBox.hide()
-	Plot(None)
+	graph.x_min = eval(x_min,{"__builtins__":{}},safe_dict)
+	graph.y_min = eval(y_min,{"__builtins__":{}},safe_dict)
+	graph.x_max = eval(x_max,{"__builtins__":{}},safe_dict)
+	graph.y_max = eval(y_max,{"__builtins__":{}},safe_dict)
+	parameter_entries_populate()
+	graph.plot()
+
+def scale_dec(widget, event=None):
+	graph.scale_style = "dec"
+	app_win.scale_box.hide()
+	plot(None)
 	
-def ScaleRad(Widget, Event=None):
-	Graph.ScaleStyle = "rad"
-	AppWin.ScaleBox.hide()
-	Plot(None)
+def scale_rad(widget, event=None):
+	graph.scale_style = "rad"
+	app_win.scale_box.hide()
+	plot(None)
 
-def ScaleCust(Widget, Event=None):
-	Graph.ScaleStyle = "cust"
-	AppWin.ScaleBox.show()
-	Plot(None)
+def scale_cust(widget, event=None):
+	graph.scale_style = "cust"
+	app_win.scale_box.show()
+	plot(None)
 
-def ToggleConnect(Widget, Event=None):
+def toggle_connect(widget, event=None):
 	"Toggle between a graph that connects points with lines and one that does not"
 	
-	global ConnectPoints
-	ConnectPoints = not ConnectPoints
-	Graph.Plot()
+	global connect_points
+	connect_points = not connect_points
+	graph.plot()
 	
 
-def Save(Widget, Event=None):
+def save(widget, event=None):
 	"Save graph as .png"
 
-	FileDialog = gtk.FileChooserDialog("Save as..", AppWin, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-	FileDialog.set_default_response(gtk.RESPONSE_OK)
-	Filter = gtk.FileFilter()
-	Filter.add_mime_type("image/png")
-	Filter.add_pattern("*.png")
-	FileDialog.add_filter(Filter)
-	FileDialog.set_filename("FunctionGraph.png")
+	file_dialog = gtk.FileChooserDialog("Save as..", app_win, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+	file_dialog.set_default_response(gtk.RESPONSE_OK)
+	filter = gtk.FileFilter()
+	filter.add_mime_type("image/png")
+	filter.add_pattern("*.png")
+	file_dialog.add_filter(filter)
+	file_dialog.set_filename("FunctionGraph.png")
 	
-	Response = FileDialog.run()
-	if Response == gtk.RESPONSE_OK:
-		x, y, w, h = Graph.DrawingArea.get_allocation()
-		PixBuffer = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, w, h)
-		PixBuffer.get_from_drawable(Graph.PixMap, Graph.PixMap.get_colormap(), 0, 0, 0, 0, w, h)
-		PixBuffer.save(FileDialog.get_filename(), "png")
-	FileDialog.destroy()
+	response = file_dialog.run()
+	if response == gtk.RESPONSE_OK:
+		x, y, w, h = graph.drawing_area.get_allocation()
+		pix_buffer = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, w, h)
+		pix_buffer.get_from_drawable(graph.PixMap, graph.PixMap.get_colormap(), 0, 0, 0, 0, w, h)
+		pix_buffer.save(file_dialog.get_filename(), "png")
+	file_dialog.destroy()
 
 
-def QuitDlg(Widget, Event=None):
+def quit_dlg(widget, event=None):
 	gtk.main_quit()
 	
 
-def ShowYelp(Widget):
+def show_yelp(widget):
 	#import os
 	#os.system("yelp /usr/share/gnome/help/lybniz/C/lybniz-manual.xml")
 	try:
@@ -643,183 +643,183 @@ def ShowYelp(Widget):
 	except:
 		print "Can't Show help"
 
-def ShowAboutDialog(Widget):
-	AboutDialog = gtk.AboutDialog()
-	AboutDialog.set_name("Lybniz")
-	AboutDialog.set_version("1.2")
-	#AboutDialog.set_copyright(u"© 2005 by Thomas Führinger")
-	AboutDialog.set_authors([u"Thomas Führinger","Sam Tygier"])
-	AboutDialog.set_comments("Function Graph Plotter")
-	AboutDialog.set_license("Revised BSD")
-	#AboutDialog.set_website("http://www.fuhringer.com/thomas/lybniz")
+def show_about_dialog(widget):
+	about_dialog = gtk.AboutDialog()
+	about_dialog.set_name("Lybniz")
+	about_dialog.set_version("1.2")
+	#about_dialog.set_copyright(u"© 2005 by Thomas Führinger")
+	about_dialog.set_authors([u"Thomas Führinger","Sam Tygier"])
+	about_dialog.set_comments("Function graph Plotter")
+	about_dialog.set_license("Revised BSD")
+	#about_dialog.set_website("http://www.fuhringer.com/thomas/lybniz")
 	
 	lybniz_icon = gtk.gdk.pixbuf_new_from_file(icon_file)
-	AboutDialog.set_logo(lybniz_icon)
-	AboutDialog.show()
+	about_dialog.set_logo(lybniz_icon)
+	about_dialog.show()
 
 
-def ParameterEntriesCreate():
+def parameter_entries_create():
 	# create text entries for parameters	
-	Table = gtk.Table(6, 3)
+	table = gtk.Table(6, 3)
 	
-	AppWin.Y1Entry = gtk.Entry()
-	AppWin.Y1Entry.set_size_request(300, 24)
-	AppWin.Y2Entry = gtk.Entry()
-	AppWin.Y3Entry = gtk.Entry()
-	AppWin.xMinEntry = gtk.Entry()
-	AppWin.xMinEntry.set_size_request(90, 24)
-	AppWin.xMinEntry.set_alignment(1)
-	AppWin.xMaxEntry = gtk.Entry()
-	AppWin.xMaxEntry.set_size_request(90, 24)
-	AppWin.xMaxEntry.set_alignment(1)
-	AppWin.xScaleEntry = gtk.Entry()
-	AppWin.xScaleEntry.set_size_request(90, 24)
-	AppWin.xScaleEntry.set_alignment(1)
-	AppWin.yMinEntry = gtk.Entry()
-	AppWin.yMinEntry.set_size_request(90, 24)
-	AppWin.yMinEntry.set_alignment(1)
-	AppWin.yMaxEntry = gtk.Entry()
-	AppWin.yMaxEntry.set_size_request(90, 24)
-	AppWin.yMaxEntry.set_alignment(1)
-	AppWin.yScaleEntry = gtk.Entry()
-	AppWin.yScaleEntry.set_size_request(90, 24)
-	AppWin.yScaleEntry.set_alignment(1)
+	app_win.y1_entry = gtk.Entry()
+	app_win.y1_entry.set_size_request(300, 24)
+	app_win.y2_entry = gtk.Entry()
+	app_win.y3_entry = gtk.Entry()
+	app_win.x_min_entry = gtk.Entry()
+	app_win.x_min_entry.set_size_request(90, 24)
+	app_win.x_min_entry.set_alignment(1)
+	app_win.x_max_entry = gtk.Entry()
+	app_win.x_max_entry.set_size_request(90, 24)
+	app_win.x_max_entry.set_alignment(1)
+	app_win.x_scale_entry = gtk.Entry()
+	app_win.x_scale_entry.set_size_request(90, 24)
+	app_win.x_scale_entry.set_alignment(1)
+	app_win.y_min_entry = gtk.Entry()
+	app_win.y_min_entry.set_size_request(90, 24)
+	app_win.y_min_entry.set_alignment(1)
+	app_win.y_max_entry = gtk.Entry()
+	app_win.y_max_entry.set_size_request(90, 24)
+	app_win.y_max_entry.set_alignment(1)
+	app_win.y_scale_entry = gtk.Entry()
+	app_win.y_scale_entry.set_size_request(90, 24)
+	app_win.y_scale_entry.set_alignment(1)
 	
-	ParameterEntriesPopulate()
+	parameter_entries_populate()
 	
-	AppWin.Y1Entry.connect("key-press-event", key_press_plot)
-	AppWin.Y2Entry.connect("key-press-event", key_press_plot)
-	AppWin.Y3Entry.connect("key-press-event", key_press_plot)
-	AppWin.xMinEntry.connect("key-press-event", key_press_plot)
-	AppWin.yMinEntry.connect("key-press-event", key_press_plot)
-	AppWin.xMaxEntry.connect("key-press-event", key_press_plot)
-	AppWin.yMaxEntry.connect("key-press-event", key_press_plot)
-	AppWin.xScaleEntry.connect("key-press-event", key_press_plot)
-	AppWin.yScaleEntry.connect("key-press-event", key_press_plot)
+	app_win.y1_entry.connect("key-press-event", key_press_plot)
+	app_win.y2_entry.connect("key-press-event", key_press_plot)
+	app_win.y3_entry.connect("key-press-event", key_press_plot)
+	app_win.x_min_entry.connect("key-press-event", key_press_plot)
+	app_win.y_min_entry.connect("key-press-event", key_press_plot)
+	app_win.x_max_entry.connect("key-press-event", key_press_plot)
+	app_win.y_max_entry.connect("key-press-event", key_press_plot)
+	app_win.x_scale_entry.connect("key-press-event", key_press_plot)
+	app_win.y_scale_entry.connect("key-press-event", key_press_plot)
 	
-	AppWin.ScaleBox = gtk.HBox()
+	app_win.scale_box = gtk.HBox()
 	
-	l = gtk.Label("y1 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
-	Table.attach(l, 0, 1, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.Y1Entry, 1, 2, 0, 1)
-	l = gtk.Label("xMin")
-	l.set_alignment(1, .5)
-	Table.attach(l, 2, 3, 0, 1, xpadding=5, ypadding=7, xoptions=gtk.FILL)
-	Table.attach(AppWin.xMinEntry, 3, 4, 0, 1, xoptions=gtk.FILL)
-	l = gtk.Label("yMin")
-	l.set_alignment(1, .5)
-	Table.attach(l, 4, 5, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.yMinEntry, 5, 6, 0, 1, xpadding=5, xoptions=gtk.FILL)
-	l = gtk.Label("y2 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("red"))
-	Table.attach(l, 0, 1, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.Y2Entry, 1, 2, 1, 2)
-	l = gtk.Label("xMax")
-	l.set_alignment(1, .5)
-	Table.attach(l, 2, 3, 1, 2, xpadding=5, ypadding=7, xoptions=gtk.FILL)
-	Table.attach(AppWin.xMaxEntry, 3, 4, 1, 2, xoptions=gtk.FILL)
-	l = gtk.Label("yMax")
-	l.set_alignment(1, .5)
-	Table.attach(l, 4, 5, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.yMaxEntry, 5, 6, 1, 2, xpadding=5, xoptions=gtk.FILL)
-	l = gtk.Label("y3 = ")
-	l.set_alignment(0, .5)
-	l.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("DarkGreen"))
-	Table.attach(l, 0, 1, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	Table.attach(AppWin.Y3Entry, 1, 2, 2, 3)
-	
-	
-	l = gtk.Label("xScale")
-	l.set_alignment(0, .5)
-	AppWin.ScaleBox.add(l)
-	#Table.attach(l, 2, 3, 2, 3, xpadding=5, ypadding=7, xoptions=gtk.FILL)
-	#Table.attach(AppWin.xScaleEntry, 3, 4, 2, 3, xoptions=gtk.FILL)
-	AppWin.ScaleBox.add(AppWin.xScaleEntry)
-	l = gtk.Label("yScale")
-	l.set_alignment(0, .5)
-	AppWin.ScaleBox.add(l)
-	#Table.attach(l, 4, 5, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
-	#Table.attach(AppWin.yScaleEntry, 5, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
-	AppWin.ScaleBox.add(AppWin.yScaleEntry)
-	Table.attach(AppWin.ScaleBox, 2, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
-	return Table
+	label = gtk.Label("y1 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
+	table.attach(label, 0, 1, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(app_win.y1_entry, 1, 2, 0, 1)
+	label = gtk.Label("X min")
+	label.set_alignment(1, .5)
+	table.attach(label, 2, 3, 0, 1, xpadding=5, ypadding=7, xoptions=gtk.FILL)
+	table.attach(app_win.x_min_entry, 3, 4, 0, 1, xoptions=gtk.FILL)
+	label = gtk.Label("Y min")
+	label.set_alignment(1, .5)
+	table.attach(label, 4, 5, 0, 1, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(app_win.y_min_entry, 5, 6, 0, 1, xpadding=5, xoptions=gtk.FILL)
+	label = gtk.Label("y2 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("red"))
+	table.attach(label, 0, 1, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(app_win.y2_entry, 1, 2, 1, 2)
+	label = gtk.Label("X max")
+	label.set_alignment(1, .5)
+	table.attach(label, 2, 3, 1, 2, xpadding=5, ypadding=7, xoptions=gtk.FILL)
+	table.attach(app_win.x_max_entry, 3, 4, 1, 2, xoptions=gtk.FILL)
+	label = gtk.Label("Y max")
+	label.set_alignment(1, .5)
+	table.attach(label, 4, 5, 1, 2, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(app_win.y_max_entry, 5, 6, 1, 2, xpadding=5, xoptions=gtk.FILL)
+	label = gtk.Label("y3 = ")
+	label.set_alignment(0, .5)
+	label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("DarkGreen"))
+	table.attach(label, 0, 1, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	table.attach(app_win.y3_entry, 1, 2, 2, 3)
 	
 	
-def ParameterEntriesPopulate():
+	label = gtk.Label("X scale")
+	label.set_alignment(0, .5)
+	app_win.scale_box.add(label)
+	#table.attach(label, 2, 3, 2, 3, xpadding=5, ypadding=7, xoptions=gtk.FILL)
+	#table.attach(app_win.x_scale_entry, 3, 4, 2, 3, xoptions=gtk.FILL)
+	app_win.scale_box.add(app_win.x_scale_entry)
+	label = gtk.Label("Y scale")
+	label.set_alignment(0, .5)
+	app_win.scale_box.add(label)
+	#table.attach(label, 4, 5, 2, 3, xpadding=5, ypadding=5, xoptions=gtk.FILL)
+	#table.attach(app_win.y_scale_entry, 5, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
+	app_win.scale_box.add(app_win.y_scale_entry)
+	table.attach(app_win.scale_box, 2, 6, 2, 3, xpadding=5, xoptions=gtk.FILL)
+	return table
+	
+	
+def parameter_entries_populate():
 	# set text in entries for parameters with user's input
 	
-	AppWin.Y1Entry.set_text(y1)
-	AppWin.Y2Entry.set_text(y2)
-	AppWin.Y3Entry.set_text(y3)
-	AppWin.xMinEntry.set_text(xMin)
-	AppWin.xMaxEntry.set_text(xMax)
-	AppWin.xScaleEntry.set_text(xScale)
-	AppWin.yMinEntry.set_text(yMin)
-	AppWin.yMaxEntry.set_text(yMax)
-	AppWin.yScaleEntry.set_text(yScale)
+	app_win.y1_entry.set_text(y1)
+	app_win.y2_entry.set_text(y2)
+	app_win.y3_entry.set_text(y3)
+	app_win.x_min_entry.set_text(x_min)
+	app_win.x_max_entry.set_text(x_max)
+	app_win.x_scale_entry.set_text(x_scale)
+	app_win.y_min_entry.set_text(y_min)
+	app_win.y_max_entry.set_text(y_max)
+	app_win.y_scale_entry.set_text(y_scale)
 	
 	
-def ParameterEntriesRepopulate():
+def parameter_entries_repopulate():
 	# set text in entries for parameters
 	
-	AppWin.Y1Entry.set_text(y1)
-	AppWin.Y2Entry.set_text(y2)
-	AppWin.Y3Entry.set_text(y3)
-	AppWin.xMinEntry.set_text(str(Graph.xMin))
-	AppWin.xMaxEntry.set_text(str(Graph.xMax))
-	AppWin.xScaleEntry.set_text(str(Graph.xScale))
-	AppWin.yMinEntry.set_text(str(Graph.yMin))
-	AppWin.yMaxEntry.set_text(str(Graph.yMax))
-	AppWin.yScaleEntry.set_text(str(Graph.yScale))
+	app_win.y1_entry.set_text(y1)
+	app_win.y2_entry.set_text(y2)
+	app_win.y3_entry.set_text(y3)
+	app_win.x_min_entry.set_text(str(graph.x_min))
+	app_win.x_max_entry.set_text(str(graph.x_max))
+	app_win.x_scale_entry.set_text(str(graph.x_scale))
+	app_win.y_min_entry.set_text(str(graph.y_min))
+	app_win.y_max_entry.set_text(str(graph.y_max))
+	app_win.y_scale_entry.set_text(str(graph.y_scale))
 	
 def key_press_plot(widget, event):
 	if event.keyval == 65293:
-		Plot(None)
+		plot(None)
 		return True
 	else:
 		return False
 
-def Main():
-	global AppWin, Graph
+def main():
+	global app_win, graph
 	
-	AppWin = gtk.Window(gtk.WINDOW_TOPLEVEL)
-	AppWin.set_title("Lybniz")
-	AppWin.set_default_size(800, 600)
-	AppWin.connect("delete-event", QuitDlg)
+	app_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+	app_win.set_title("Lybniz")
+	app_win.set_default_size(800, 600)
+	app_win.connect("delete-event", quit_dlg)
 	
-	AppWin.set_icon_from_file(icon_file)
+	app_win.set_icon_from_file(icon_file)
 	
-	AppWin.AccelGroup = gtk.AccelGroup()
-	AppWin.add_accel_group(AppWin.AccelGroup)
+	app_win.accel_group = gtk.AccelGroup()
+	app_win.add_accel_group(app_win.accel_group)
 
-	AppWin.VBox = gtk.VBox(False, 1)
-	AppWin.VBox.set_border_width(1)
-	AppWin.add(AppWin.VBox)
+	app_win.v_box = gtk.VBox(False, 1)
+	app_win.v_box.set_border_width(1)
+	app_win.add(app_win.v_box)
 	
-	AppWin.StatusBar = gtk.Statusbar()
-	AppWin.StatusBar.ContextId = AppWin.StatusBar.get_context_id("Dummy")
+	app_win.status_bar = gtk.Statusbar()
+	app_win.status_bar.ContextId = app_win.status_bar.get_context_id("Dummy")
 
-	MenuToolbarCreate()
-	AppWin.VBox.pack_start(AppWin.MenuMain, False, True, 0)
+	menu_toolbar_create()
+	app_win.v_box.pack_start(app_win.menu_main, False, True, 0)
 	
-	HandleBox = gtk.HandleBox()
-	HandleBox.add(AppWin.ToolBar)
-	AppWin.VBox.pack_start(HandleBox, False, True, 0)
+	handle_box = gtk.HandleBox()
+	handle_box.add(app_win.tool_bar)
+	app_win.v_box.pack_start(handle_box, False, True, 0)
 	
-	AppWin.VBox.pack_start(ParameterEntriesCreate(), False, True, 4)
+	app_win.v_box.pack_start(parameter_entries_create(), False, True, 4)
 	
-	Graph = GraphClass()
-	AppWin.VBox.pack_start(Graph.DrawingArea, True, True, 0)
-	AppWin.VBox.pack_start(AppWin.StatusBar, False, True, 0)	
+	graph = GraphClass()
+	app_win.v_box.pack_start(graph.drawing_area, True, True, 0)
+	app_win.v_box.pack_start(app_win.status_bar, False, True, 0)	
 		
-	AppWin.show_all()
-	AppWin.ScaleBox.hide()
+	app_win.show_all()
+	app_win.scale_box.hide()
 
 	gtk.main()
 
 
 # Start it all
-if __name__ == '__main__': Main()
+if __name__ == '__main__': main()
