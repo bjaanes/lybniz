@@ -11,14 +11,16 @@
 	Released under the terms of the revised BSD license
 	Modified: 2006-09-12
 """
+
 from __future__ import division
-import gtk, pango, sys
+import gtk, pango
+import sys
 import math
 from math import *
 
 try:
 	import gnome
-	props = { gnome.PARAM_APP_DATADIR : '/usr/share'}
+	props = {gnome.PARAM_APP_DATADIR : '/usr/share'}
 	prog = gnome.program_init("lybniz", '1.2', properties=props)
 except:
 	print "Gnome not found"
@@ -73,7 +75,7 @@ def marks(min_val,max_val,minor=1):
 		print "min bigger or equal to max"
 		raise ValueError		
 
-	a=0.2 # tweakable control for when to switch scales
+	a = 0.2 # tweakable control for when to switch scales
 	          # big a value results in more marks
 
 	a = a + log10(minor)
@@ -96,8 +98,7 @@ def marks(min_val,max_val,minor=1):
 
 
 class GraphClass:
-	def __init__(self):	
-
+	def __init__(self):
 		# Create backing pixmap of the appropriate size
 		def configure_event(widget, event):
 			x, y, w, h = widget.get_allocation()
@@ -200,7 +201,7 @@ class GraphClass:
 			self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(0))),0),(int(round(self.canvas_x(0))),self.canvas_height)])
 			self.pix_map.draw_lines(self.gc['black'], [(0,int(round(self.canvas_y(0)))),(self.canvas_width,int(round(self.canvas_y(0))))])
 			# old style axis marks
-			iv = self.x_scale * self.canvas_width/(self.x_max - self.x_min) # pixel interval between marks
+			iv = self.x_scale * self.canvas_width / (self.x_max - self.x_min) # pixel interval between marks
 			os = self.canvas_x(0) % iv # pixel offset of first mark 
 			# loop over each mark.
 			for i in xrange(int(self.canvas_width / iv + 1)):
@@ -209,7 +210,7 @@ class GraphClass:
 				self.pix_map.draw_lines(self.gc['black'], [(int(round(os + i * iv)), int(round(self.canvas_y(0) - 5))), (int(round(os + i * iv)), int(round(self.canvas_y(0) + 5)))])
 			
 			# and the y-axis
-			iv = self.y_scale * self.canvas_height/(self.y_max - self.y_min)
+			iv = self.y_scale * self.canvas_height / (self.y_max - self.y_min)
 			os = self.canvas_y(0) % iv
 			for i in xrange(int(self.canvas_height / iv + 1)):
 				self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(0) - 5)), int(round(i * iv + os))), (int(round(self.canvas_x(0) + 5)), int(round(i * iv + os)))])			
@@ -237,7 +238,7 @@ class GraphClass:
 			self.pix_map.draw_lines(self.gc['black'], [(center_x_pix,0),(center_x_pix,self.canvas_height)])
 			self.pix_map.draw_lines(self.gc['black'], [(0,center_y_pix),(self.canvas_width,center_y_pix)])			
 				
-			for i in marks(self.x_min/factor,self.x_max/factor):
+			for i in marks(self.x_min / factor, self.x_max / factor):
 				label = '%g' % i
 				if (self.scale_style == "rad"): label += '\xCF\x80'
 				i = i * factor
@@ -262,11 +263,11 @@ class GraphClass:
 				self.pix_map.draw_layout(self.gc['black'],center_x_pix +numbers_x_pos - adjust,int(round(self.canvas_y(i))),self.layout)
 
 			# minor marks
-			for i in marks(self.x_min/factor,self.x_max/factor,minor=10):
+			for i in marks(self.x_min / factor, self.x_max / factor, minor=10):
 				i = i * factor
 				self.pix_map.draw_lines(self.gc['black'], [(int(round(self.canvas_x(i))), center_y_pix - 2), (int(round(self.canvas_x(i))), center_y_pix +2)])
 
-			for i in marks(self.y_min,self.y_max,minor=10):
+			for i in marks(self.y_min, self.y_max, minor=10):
 				label = '%g' % i
 				self.pix_map.draw_lines(self.gc['black'], [(center_x_pix - 2, int(round(self.canvas_y(i)))), (center_x_pix +2, int(round(self.canvas_y(i))))])
 				
@@ -318,14 +319,13 @@ class GraphClass:
 			print "time to draw graph:", (time() - start_graph) * 1000, "ms"
 					
 		self.draw_drawable()
-
 		
 	def canvas_x(self, x):
 		"Calculate position on canvas to point on graph"
-		return (x - self.x_min) * self.canvas_width/(self.x_max - self.x_min)
+		return (x - self.x_min) * self.canvas_width / (self.x_max - self.x_min)
 
 	def canvas_y(self, y):
-		return (self.y_max - y) * self.canvas_height/(self.y_max - self.y_min)
+		return (self.y_max - y) * self.canvas_height / (self.y_max - self.y_min)
 		
 	def canvas_point(self, x, y):
 		return (self.canvas_x(x), self.canvas_y(y))
@@ -588,20 +588,24 @@ def zoom_reset(widget, event=None):
 	parameter_entries_populate()
 	graph.plot()
 
+
 def scale_dec(widget, event=None):
 	graph.scale_style = "dec"
 	app_win.scale_box.hide()
 	plot(None)
-	
+
+
 def scale_rad(widget, event=None):
 	graph.scale_style = "rad"
 	app_win.scale_box.hide()
 	plot(None)
 
+
 def scale_cust(widget, event=None):
 	graph.scale_style = "cust"
 	app_win.scale_box.show()
 	plot(None)
+
 
 def toggle_connect(widget, event=None):
 	"Toggle between a graph that connects points with lines and one that does not"
@@ -633,7 +637,7 @@ def save(widget, event=None):
 
 def quit_dlg(widget, event=None):
 	gtk.main_quit()
-	
+
 
 def show_yelp(widget):
 	#import os
@@ -642,6 +646,7 @@ def show_yelp(widget):
 		gnome.help_display("lybniz")
 	except:
 		print "Can't Show help"
+
 
 def show_about_dialog(widget):
 	about_dialog = gtk.AboutDialog()
@@ -774,13 +779,15 @@ def parameter_entries_repopulate():
 	app_win.y_min_entry.set_text(str(graph.y_min))
 	app_win.y_max_entry.set_text(str(graph.y_max))
 	app_win.y_scale_entry.set_text(str(graph.y_scale))
-	
+
+
 def key_press_plot(widget, event):
 	if event.keyval == 65293:
 		plot(None)
 		return True
 	else:
 		return False
+
 
 def main():
 	global app_win, graph
