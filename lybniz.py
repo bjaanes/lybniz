@@ -292,17 +292,17 @@ class GraphClass:
 		plots = []
 		# precompile the functions
 		try:
-			compiled_y1 = compile(y1,"",'eval')
+			compiled_y1 = compile(y1.replace("^","**"),"",'eval')
 			plots.append((compiled_y1,0,self.gc['blue']))
 		except:
 			compiled_y1 = None
 		try:
-			compiled_y2 = compile(y2,"",'eval')
+			compiled_y2 = compile(y2.replace("^","**"),"",'eval')
 			plots.append((compiled_y2,1,self.gc['red']))
 		except:
 			compiled_y2 = None
 		try:
-			compiled_y3 = compile(y3,"",'eval')
+			compiled_y3 = compile(y3.replace("^","**"),"",'eval')
 			plots.append((compiled_y3,2,self.gc['green']))
 		except:
 			compiled_y3 = None
