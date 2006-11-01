@@ -680,7 +680,8 @@ def show_about_dialog(widget):
 		about_dialog.set_logo(lybniz_icon)
 	except:
 		print "icon not found at", icon_file
-	about_dialog.show()
+	about_dialog.connect ("response", lambda d, r: d.destroy())
+	about_dialog.run()
 
 
 def parameter_entries_create():
