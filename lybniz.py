@@ -675,9 +675,11 @@ def show_about_dialog(widget):
 	about_dialog.set_comments(_("Function graph Plotter"))
 	about_dialog.set_license("Revised BSD")
 	#about_dialog.set_website("http://www.fuhringer.com/thomas/lybniz")
-	
-	lybniz_icon = gtk.gdk.pixbuf_new_from_file(icon_file)
-	about_dialog.set_logo(lybniz_icon)
+	try:
+		lybniz_icon = gtk.gdk.pixbuf_new_from_file(icon_file)
+		about_dialog.set_logo(lybniz_icon)
+	except:
+		print "icon not found at", icon_file
 	about_dialog.show()
 
 
@@ -814,8 +816,10 @@ def main():
 	app_win.set_title("Lybniz")
 	app_win.set_default_size(800, 600)
 	app_win.connect("delete-event", quit_dlg)
-	
-	app_win.set_icon_from_file(icon_file)
+	try:
+		app_win.set_icon_from_file(icon_file)
+	except:
+		print "icon not found at", icon_file
 	
 	app_win.accel_group = gtk.AccelGroup()
 	app_win.add_accel_group(app_win.accel_group)
