@@ -6,7 +6,7 @@
 	© Thomas Führinger, Sam Tygier 2005-2006
 	http://lybniz2.sourceforge.net/
 	
-	Version 1.2
+	Version 1.3
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
 	Modified: 2006-09-12
@@ -18,10 +18,12 @@ import sys
 import math
 from math import *
 
+app_version = 1.3
+
 try:
 	import gnome
 	props = {gnome.PARAM_APP_DATADIR : '/usr/share'}
-	prog = gnome.program_init("lybniz", '1.2', properties=props)
+	prog = gnome.program_init("lybniz", str(app_version), properties=props)
 except:
 	print "Gnome not found"
 
@@ -669,7 +671,7 @@ def show_yelp(widget):
 def show_about_dialog(widget):
 	about_dialog = gtk.AboutDialog()
 	about_dialog.set_name("Lybniz")
-	about_dialog.set_version("1.2")
+	about_dialog.set_version(str(app_version))
 	#about_dialog.set_copyright(u"© 2005 by Thomas Führinger")
 	about_dialog.set_authors([u"Thomas Führinger","Sam Tygier"])
 	about_dialog.set_comments(_("Function graph Plotter"))
