@@ -674,7 +674,7 @@ def show_about_dialog(widget):
 	about_dialog.set_authors([u"Thomas Führinger","Sam Tygier"])
 	about_dialog.set_comments(_("Function graph Plotter"))
 	about_dialog.set_license("Revised BSD")
-	#about_dialog.set_website("http://www.fuhringer.com/thomas/lybniz")
+	about_dialog.set_website("http://lybniz2.sourceforge.net/")
 	try:
 		lybniz_icon = gtk.gdk.pixbuf_new_from_file(icon_file)
 		about_dialog.set_logo(lybniz_icon)
