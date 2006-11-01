@@ -1,5 +1,11 @@
 Current Version 1.2
 
+Changes since 1.2
+
+* Translatable
+* fac(), and sinc() functions added. ^ can be used for powers.
+* Improve documentation
+
 Changes since 1.1
 
 * Coloured plotting

@@ -139,6 +139,120 @@ xScale = pi / 2
 </table>
 </sect1>
 
+<sect1 id="lybniz-math-functions"> 
+<title>Operators and Functions</title>
+
+<para>Expressions are entered in python syntax. The following operators can be used. Note: multiplication is not implied (use "2*x" not "2x")</para>
+
+<table frame='all'>
+	<tgroup cols='2' align='left' colsep='0' rowsep='0'>
+		<colspec/>
+		<colspec/>
+		<thead>
+			<row>
+				<entry>Operator</entry>
+				<entry>Description</entry>
+			</row>
+		</thead>
+		<tbody>
+			<row>
+				<entry>+,-,*,/</entry>
+				<entry>Plus, minus, multiply, divide</entry>
+			</row>
+			<row>
+				<entry>//</entry>
+				<entry>Integer divide. (eg 3/2 = 1)</entry>
+			</row>
+			<row>
+				<entry>**, ^</entry>
+				<entry>Raise to the power of</entry>
+			</row>			
+			<row>
+				<entry>%</entry>
+				<entry>Remainder</entry>
+			</row>			
+			
+		</tbody>
+	</tgroup>
+</table>
+
+
+
+<para>Lybniz has all the math functions of the python standard library available.</para>
+
+<table>
+<tgroup cols="2">
+<tbody>
+<row>
+<entry>
+<itemizedlist>
+<listitem><para>acos()</para></listitem>
+<listitem><para>asin()</para></listitem>
+<listitem><para>atan()</para></listitem>
+<listitem><para>atan2()</para></listitem>
+<listitem><para>ceil()</para></listitem>
+<listitem><para>cos()</para></listitem>
+<listitem><para>cosh()</para></listitem>
+<listitem><para>degrees()</para></listitem>
+<listitem><para>exp()</para></listitem>
+<listitem><para>fabs()</para></listitem>
+<listitem><para>floor()</para></listitem>
+<listitem><para>fmod()</para></listitem>
+<listitem><para>frexp()</para></listitem>
+</itemizedlist>
+</entry>
+<entry>
+<itemizedlist>
+<listitem><para>hypot()</para></listitem>
+<listitem><para>ldexp()</para></listitem>
+<listitem><para>log()</para></listitem>
+<listitem><para>log10()</para></listitem>
+<listitem><para>modf()</para></listitem>
+<listitem><para>pow()</para></listitem>
+<listitem><para>radians()</para></listitem>
+<listitem><para>sin()</para></listitem>
+<listitem><para>sinh()</para></listitem>
+<listitem><para>sqrt()</para></listitem>
+<listitem><para>tan()</para></listitem>
+<listitem><para>tanh()</para></listitem>
+</itemizedlist>
+</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+<para>These are documented at <ulink url="http://docs.python.org/lib/module-math.html" type="http">Python Library Reference - Math</ulink>.</para>
+
+<para>There are also a few extra functions that may be useful.</para>
+
+<table frame='all'>
+	<tgroup cols='2' align='left' colsep='0' rowsep='0'>
+		<colspec/>
+		<colspec/>
+		<thead>
+			<row>
+				<entry>Function</entry>
+				<entry>Description</entry>
+			</row>
+		</thead>
+		<tbody>
+			<row>
+				<entry>fac(x)</entry>
+				<entry>Factorial of x (or x!). Note: only works with positive integers.</entry>
+			</row>
+			<row>
+				<entry>sinc(x)</entry>
+				<entry>sin(x)/x.</entry>
+			</row>
+		</tbody>
+	</tgroup>
+</table>
+
+<para>The constants pi and e can be used.</para>
+
+</sect1>
+
 <sect1 id="gemello-about"> 
 	<title>About &app;</title> 
 	<para><application>&app;</application> was originally written by Thomas Führinger
