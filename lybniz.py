@@ -9,7 +9,7 @@
 	Version 1.3
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
-	Modified: 2006-09-12
+	Modified: 2006-11-01
 """
 
 from __future__ import division

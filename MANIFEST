@@ -10,3 +10,13 @@ images/lybniz.svg
 doc/lybniz.xml
 doc/figures
 doc/figures/lybniz_colour_graph_small.png
+extras/Graph.py
+extras/lybniz-maemo_py
+extras/lybniz-manual.xml
+extras/lybniz.py
+extras/lybniz-wb-manual.xml
+extras/lybniz_wb.py
+extras/README
+extras/Workbench.py
+po/messages.mo
+po/messages.pot
