@@ -1,4 +1,10 @@
-Current Version 1.3
+Current Version 1.3.1
+
+Changes since 1.3
+
+* [ 1807003 ] Error when saving
+* [ 1726426 ] "evaluate" doenst recognise "^" power sign
+* [ 1829857 ] Two start entries for lybniz - thanks Mario Bonino
 
 Changes since 1.2
 

@@ -3,13 +3,13 @@
 
 """ 
 	Simple Function graph Plotter
-	© Thomas Führinger, Sam Tygier 2005-2006
+	© Thomas Führinger, Sam Tygier 2005-2007
 	http://lybniz2.sourceforge.net/
 	
-	Version 1.3
+	Version 1.3.1
 	Requires PyGtk 2.6	
 	Released under the terms of the revised BSD license
-	Modified: 2006-11-01
+	Modified: 2007-11-21
 """
 
 from __future__ import division
@@ -18,7 +18,7 @@ import sys
 import math
 from math import *
 
-app_version = 1.3
+app_version = 1.3.1
 
 try:
 	import gnome
