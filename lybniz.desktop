@@ -1,10 +1,9 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=Lybniz Graph Plotter
 Comment=Plot graphs and functions
 Exec=lybniz.py
 Terminal=false
 StartupNotify=true
 Type=Application
-Categories=Education;Utility;
-Icon=lybniz.png
+Categories=Education;
+Icon=lybniz
