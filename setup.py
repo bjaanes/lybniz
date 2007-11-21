@@ -7,7 +7,7 @@ data_files = [('share/applications',['lybniz.desktop']),('share/pixmaps',['image
 
 setup(
 	name = 'lybniz',
-	version = '1.3',
+	version = '1.3.1',
 	description = 'Graph Plotter',
 	author = 'Thomas Führinger, Sam Tygier',
 	author_email = 'ThomasFuhringer@Yahoo.com, samtygier@yahoo.co.uk',
