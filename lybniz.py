@@ -650,7 +650,7 @@ def save(widget, event=None):
 	if response == gtk.RESPONSE_OK:
 		x, y, w, h = graph.drawing_area.get_allocation()
 		pix_buffer = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, w, h)
-		pix_buffer.get_from_drawable(graph.PixMap, graph.PixMap.get_colormap(), 0, 0, 0, 0, w, h)
+		pix_buffer.get_from_drawable(graph.pix_map, graph.pix_map.get_colormap(), 0, 0, 0, 0, w, h)
 		pix_buffer.save(file_dialog.get_filename(), "png")
 	file_dialog.destroy()
 
