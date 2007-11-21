@@ -513,7 +513,7 @@ def evaluate(widget, event=None):
 			try:
 				x = float(dlg_win.x_entry.get_text())
 				safe_dict['x']=x
-				e[1].set_text(str(eval(e[0],{"__builtins__":{}},safe_dict)))
+				e[1].set_text(str(eval(e[0].replace("^","**"),{"__builtins__":{}},safe_dict)))
 			except:
 				if len(e[0]) > 0:
 					e[1].set_text("Error: %s" % sys.exc_value)
