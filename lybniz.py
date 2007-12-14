@@ -18,7 +18,7 @@ import sys
 import math
 from math import *
 
-app_version = 1.3.1
+app_version = "1.3.1"
 
 try:
 	import gnome
