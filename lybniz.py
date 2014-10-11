@@ -293,27 +293,45 @@ class GraphClass:
 				
 		plots = []
 		# precompile the functions
-		try:
-			compiled_y1 = compile(y1.replace("^","**"),"",'eval')
-			plots.append((compiled_y1,0,self.gc['blue']))
-		except:
+		invalid_input = False
+		if y1:
+			try:
+				compiled_y1 = compile(y1.replace("^","**"),"",'eval')
+				plots.append((compiled_y1,0,self.gc['blue']))
+			except:
+				set_statusbar("Invalid function")
+				invalid_input = True
+				compiled_y1 = None
+		else:
 			compiled_y1 = None
-		try:
-			compiled_y2 = compile(y2.replace("^","**"),"",'eval')
-			plots.append((compiled_y2,1,self.gc['red']))
-		except:
+			
+		if y2:
+			try:
+				compiled_y2 = compile(y2.replace("^","**"),"",'eval')
+				plots.append((compiled_y2,1,self.gc['red']))
+			except:
+				set_statusbar("Invalid function")
+				invalid_input = True
+				compiled_y2 = None
+		else:
 			compiled_y2 = None
-		try:
-			compiled_y3 = compile(y3.replace("^","**"),"",'eval')
-			plots.append((compiled_y3,2,self.gc['green']))
-		except:
+		
+		if y3:	
+			try:
+				compiled_y3 = compile(y3.replace("^","**"),"",'eval')
+				plots.append((compiled_y3,2,self.gc['green']))
+			except:
+				set_statusbar("Invalid function")
+				invalid_input = True
+				compiled_y3 = None
+		else:
 			compiled_y3 = None
 		
 		self.prev_y = [None, None, None]
 		
 		if enable_profiling:
 			start_graph = time()
-		
+
 		if len(plots) != 0:
 			for i in xrange(0,self.canvas_width,x_res):
 				x = self.graph_x(i + 1)
@@ -324,7 +342,7 @@ class GraphClass:
 						y_c = int(round(self.canvas_y(y)))
 						
 						if y_c < 0 or y_c > self.canvas_height:
-							raise ValueError
+							break
 						
 						if connect_points and self.prev_y[e[1]] is not None:
 							self.pix_map.draw_lines(e[2], [(i, self.prev_y[e[1]]), (i + x_res, y_c)])
@@ -333,11 +351,16 @@ class GraphClass:
 						self.prev_y[e[1]] = y_c
 					except:
 						#print "Error at %d: %s" % (x, sys.exc_value)
+						set_statusbar("Invalid function")
+						invalid_input = True
 						self.prev_y[e[1]] = None
 					
 		if enable_profiling:
 			print "time to draw graph:", (time() - start_graph) * 1000, "ms"
-					
+
+		if not invalid_input:
+			set_statusbar("")
+			
 		self.draw_drawable()
 		
 	def canvas_x(self, x):
@@ -810,6 +833,10 @@ def key_press_plot(widget, event):
 		return True
 	else:
 		return False
+		
+def set_statusbar(text):
+	app_win.status_bar.remove_all(0)
+	app_win.status_bar.push(0, text)
 
 
 def main():
@@ -832,7 +859,6 @@ def main():
 	app_win.add(app_win.v_box)
 	
 	app_win.status_bar = gtk.Statusbar()
-	app_win.status_bar.ContextId = app_win.status_bar.get_context_id("Dummy")
 
 	menu_toolbar_create()
 	app_win.v_box.pack_start(app_win.menu_main, False, True, 0)
